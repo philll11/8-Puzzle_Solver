@@ -8,3 +8,5 @@ This application solves the 8-puzzle problem using 6 different search algorithms
 *  A* search using Manhattan Distance
 
 ## This application was built to satisfy the first assignment for the Massey University Artificial Intelligence paper 159.302.
+
+The 6 algorithms are located in the algorithm.cpp file.
