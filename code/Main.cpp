@@ -12,6 +12,9 @@
  * graphics library for Windows.
  */
 
+//This is a comment//
+
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
