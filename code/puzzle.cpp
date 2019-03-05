@@ -16,6 +16,7 @@ Puzzle::Puzzle(const Puzzle &p) : path(p.path){
 		}
 	}	
 	
+
 	x0 = p.x0;
 	y0 = p.y0;
 	//path = p.path;
