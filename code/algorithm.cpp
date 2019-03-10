@@ -1,5 +1,5 @@
 
-
+#include <typeinfo>
 #include "algorithm.h"
 
 using namespace std;
@@ -14,27 +14,36 @@ using namespace std;
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
-    string path;
+	string path;
 	clock_t startTime;
     //add necessary variables here
 
 
     //algorithm implementation
-	// cout << "------------------------------" << endl;
- //    cout << "<<breadthFirstSearch>>" << endl;
- //    cout << "------------------------------" << endl;
-    
+	cout << "------------------------------" << endl;
+	cout << "<<breadthFirstSearch>>" << endl;
+	cout << "------------------------------" << endl;
 	startTime = clock();
 	
 	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-	maxQLength= rand() % 1500; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-	numOfStateExpansions = rand() % 800; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
 
+
+//	AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.	
+	maxQLength= rand() % 1500;
+
+       
+	//AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
+	numOfStateExpansions = rand() % 800;	
 	
-	
+
+
+
 //***********************************************************************************************************
+	
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	path = "DDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
+
+	//Sequence of moves
+	path = "DDRRLLLUUURDLUDURDLUU";            
 	return path;		
 		
 }

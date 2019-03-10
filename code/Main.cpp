@@ -3,8 +3,8 @@
 //  
 //  Start-up codes by n.h.reyes@massey.ac.nz
 //
-//  Name(s):
-//  Date:
+//  Name(s): Leonard Phillips (15232331) & Peter Fredatovich ()
+//  Date: 15 April, 2019
 //
 //////////////////////////////////////////////////////////////////////////
 /*
