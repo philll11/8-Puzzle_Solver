@@ -1,7 +1,8 @@
 
 #include <typeinfo>
 #include "algorithm.h"
-#include "puzzle.h"
+#include <queue>
+
 using namespace std;
 
 
@@ -13,30 +14,39 @@ using namespace std;
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
 	string path;
 	clock_t startTime;
 
-
-
     //add necessary variables here
+    queue<Puzzle*> Q;
+    maxQLength = 0;
+    Puzzle *begin = new Puzzle(initialState, goalState);
+    Q.push(begin);
+    maxQLength++;
 
 
-    //algorithm implementation
-	cout << "------------------------------" << endl;
-	cout << "<<breadthFirstSearch>>" << endl;
-	cout << "------------------------------" << endl;
+// Leonard (2:30pm - 13/02/19)
+    Puzzle *end = calcMoves(Q, maxQLength);
+
+    //algorithm implementation 
+	cout << "------------------------------" << endl; 	//COMMENT OUT WHEN DONE
+    cout << "<<breadthFirstSearch>>" << endl;			//COMMENT OUT WHEN DONE
+    cout << "------------------------------" << endl;	//COMMENT OUT WHEN DONE
+
 	startTime = clock();
 	
 	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
 
 
 //	AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.	
-	maxQLength= rand() % 1500;
+	maxQLength= maxQLength;
 
        
 	//AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
-	numOfStateExpansions = rand() % 800;	
+	numOfStateExpansions = end->getPathLength();
 	
 
 
@@ -46,10 +56,45 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
 
 	//Sequence of moves
-	path = "DDRRLLLUUURDLUDURDLUU";            
+	path = end->getPath();            
 	return path;		
-		
 }
+
+Puzzle* calcMoves(queue<Puzzle*> Q, int &maxQLength) {
+
+	if(Q.empty()) { return NULL; }
+
+	Puzzle *toExpand = Q.front();
+	Puzzle *expanded;
+
+	if(toExpand->goalMatch()) { return toExpand; }
+	Q.pop();
+
+	if(toExpand->canMoveUp()) { 
+		expanded = toExpand->moveUp();
+		Q.push(expanded);
+	}
+	if(toExpand->canMoveDown()) {
+		expanded = toExpand->moveDown();
+		Q.push(expanded);
+	}
+	if(toExpand->canMoveLeft()) {
+		expanded = toExpand->moveLeft();
+		Q.push(expanded);
+	}
+	if(toExpand->canMoveRight()) {
+		expanded = toExpand->moveRight();
+		Q.push(expanded);
+	}
+
+	if(maxQLength < Q.size()) { maxQLength = Q.size(); }
+
+	return calcMoves(Q, maxQLength);
+
+}
+// Leonard (2:30pm - 13/02/19)
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
