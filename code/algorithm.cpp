@@ -1,7 +1,7 @@
 
 #include <typeinfo>
 #include "algorithm.h"
-
+#include "puzzle.h"
 using namespace std;
 
 
@@ -16,6 +16,9 @@ using namespace std;
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
 	string path;
 	clock_t startTime;
+
+
+
     //add necessary variables here
 
 
