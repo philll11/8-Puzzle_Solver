@@ -13,12 +13,13 @@ int main() {
 	int myNumOfSE = 0;
 	int myMaxQLen = 3;
 	
-	string myInitState = "042158367";
+	string myInitState1 = "042158367";
+	string myInitState2 = "123450786";
 	string myGoalState = "123456780";
 
 
 
-	BFS(myInitState, myGoalState, myNumOfSE, myMaxQLen);
+	BFS(myInitState2, myGoalState, myNumOfSE, myMaxQLen);
 
 	return 0;
 }
