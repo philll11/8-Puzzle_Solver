@@ -1,6 +1,8 @@
 
 
 #include "algorithm.h"
+#include <queue>
+
 
 using namespace std;
 
@@ -16,13 +18,21 @@ using namespace std;
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
     string path;
 	clock_t startTime;
+
     //add necessary variables here
+    queue<Puzzle*> Q;
+    maxQLength = 0;
+    Puzzle *begin = new Puzzle(initialState, goalState);
+    Q.push(begin);
+    maxQLength++;
 
 
-    //algorithm implementation
-	// cout << "------------------------------" << endl;
- //    cout << "<<breadthFirstSearch>>" << endl;
- //    cout << "------------------------------" << endl;
+    //algorithm implementation 
+	cout << "------------------------------" << endl; 	//COMMENT OUT WHEN DONE
+    cout << "<<breadthFirstSearch>>" << endl;			//COMMENT OUT WHEN DONE
+    cout << "------------------------------" << endl;	//COMMENT OUT WHEN DONE
+
+
     
 	startTime = clock();
 	
