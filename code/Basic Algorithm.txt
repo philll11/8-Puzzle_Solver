@@ -1,0 +1,15 @@
+Basic algorithm:
+
+1) Initialise Q with search node (S) as only entry; set vistied = (S)
+
+2) If Q is empty, fail. Else, pick some search node N from Q.
+
+3) If state (N) is a goal, return N (we've reached the goal).
+
+4) otherwise Remove N from Q.
+
+5) Find all the descendants of state (N) not in visted and create all the one-step extensions of N to each descendant.
+
+6) Add the extended paths to Q, add children of state (N) to visted.
+
+7) go to step 2
