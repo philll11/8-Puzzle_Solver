@@ -335,8 +335,9 @@ try{
 	//Run algorithm
 
     if(algorithmSelected == "breadth_first_search" ){
-        
+        cout<<"P>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ath = "<<path<<endl;
         path = breadthFirstSearch(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime);
+        
 
     } else if(algorithmSelected == "breadth_first_search_vlist" ){
         
@@ -417,6 +418,9 @@ catch(exception &e){
 
 		cout << "================================================================================================================" << endl << endl;	
 		
+        cout<<"Path = "<<path<<endl;
+
+
 		if(path != "") {
              initgraph(&graphDriver, &graphMode, "", WIDTH, HEIGHT);
 			 AnimateSolution(initialState, goalState, path);
@@ -424,6 +428,9 @@ catch(exception &e){
 		}
 	}
     
+    getch(); //Stops the animation dissapearing
+
+    cout<<"Path = "<<path<<endl;
     
     /* Show that we have exited without an error. */
     return 0;

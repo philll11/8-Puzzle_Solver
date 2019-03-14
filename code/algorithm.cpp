@@ -17,35 +17,64 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////////////
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
     string path;
-	clock_t startTime;
+	clock_t startTime = clock();
 
-    //add necessary variables here
+	//Create a queue to hold the states
     queue<Puzzle*> Q;
     maxQLength = 0;
+
+    //Instatiate the board from the argv, and push onto the queue, incrementing the length    
+    							//argv[3]     //argv[4]
     Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push(begin);
     maxQLength++;
 
+    int r=0;
 
-    //algorithm implementation 
-	cout << "------------------------------" << endl; 	//COMMENT OUT WHEN DONE
-    cout << "<<breadthFirstSearch>>" << endl;			//COMMENT OUT WHEN DONE
-    cout << "------------------------------" << endl;	//COMMENT OUT WHEN DONE
+    //Continue the algorithm until the Q is empty
+	while(!Q.empty()){
 
+		//cout<<r<<endl;
+		
+		//Get the front element (state) from the Q
+		Puzzle *toExpand = Q.front();
 
-    
-	startTime = clock();
-	
-	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-	maxQLength= rand() % 1500; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-	numOfStateExpansions = rand() % 800; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
+		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
+		if(toExpand->goalMatch()) { 
+			path = toExpand->getPath(); 
+			break;
+		}
 
-	
+		//Dequeue the front state. 
+		Q.pop();
+
+		if(toExpand->canMoveUp())
+			Q.push(toExpand->moveUp());
+		
+		if(toExpand->canMoveRight())
+			Q.push(toExpand->moveRight());
+		
+		if(toExpand->canMoveDown())
+			Q.push(toExpand->moveDown());
+			
+		if(toExpand->canMoveLeft()) 
+			Q.push(toExpand->moveLeft());	
+
+		if(maxQLength < Q.size()) maxQLength = Q.size(); 
+		
+		numOfStateExpansions++;
+
+		delete toExpand;
+
+		r++;
+
+	}
 	
 //***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	path = "DDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
+	//path = "DDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
 	return path;		
+			
 		
 }
 
@@ -78,9 +107,14 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 //***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
 	path = "DDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
-	return path;		
-		
+	return path;
 }
+
+
+
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //

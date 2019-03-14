@@ -26,7 +26,14 @@ private:
 public:
     
     string strBoard;
-     
+
+    // bool operator!=(Puzzle const&o){
+    //     if(&o != this){
+    //         if(path.compare(o.path)){
+    //             return true;
+    //         }else return false;
+    //     }
+    // }     
 
     Puzzle(const Puzzle &p); //Constructor
     Puzzle(string const elements, string const goal);

@@ -1,0 +1,27 @@
+
+//breadthFirst search
+
+while(Q is not empty)
+
+	Get the front of the Q value
+	
+	Check if it is the Puzzle->goalMatch
+	
+	If it is, get the path / break from loop
+
+	If not, deque check which direction to move (U, R, D, L), and puzzle->GetPath
+		push Puzzle->newMove onto Q
+
+	Increment numStateExpansions++
+
+	Check Q Length and increase if necasary
+
+Close loop
+
+Check time
+
+Return path
+
+	
+
+	
