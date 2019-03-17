@@ -1,8 +1,7 @@
 
-
+#include <typeinfo>
 #include "algorithm.h"
 #include <queue>
-
 
 using namespace std;
 
@@ -15,6 +14,8 @@ using namespace std;
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
 	string path;
 	clock_t startTime = clock();
@@ -32,7 +33,6 @@ string breadthFirstSearch(string const initialState, string const goalState, int
     //Continue the algorithm until the Q is empty
 	while(!Q.empty()){
 
-		//cout<<r<<endl;
 		
 		//Get the front element (state) from the Q
 		Puzzle *toExpand = Q.front();
@@ -67,12 +67,13 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 	}
 	
 //***********************************************************************************************************
+	
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	//path = "DDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
-	return path;		
-			
-		
+	return path;
 }
+// Leonard (2:30pm - 13/02/19)
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
