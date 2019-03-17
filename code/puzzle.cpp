@@ -139,6 +139,7 @@ string Puzzle::toString(){
 }
 
 
+//Check board elements against goalboard elements for a match
 
 bool Puzzle::goalMatch(){
 	for(int i = 0; i < 3; i++){
