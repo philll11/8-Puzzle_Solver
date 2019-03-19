@@ -7,6 +7,7 @@ using namespace std;
 
 
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
 // Search Algorithm:  Breadth-First Search 
@@ -32,10 +33,11 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 
     //Continue the algorithm until the Q is empty
 	while(!Q.empty()){
-
 		
 		//Get the front element (state) from the Q
 		Puzzle *toExpand = Q.front();
+
+		//std::cout << toExpand->getPath() << endl;
 
 		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
 		if(toExpand->goalMatch()) { 
@@ -46,16 +48,17 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 		//Dequeue the front state. 
 		Q.pop();
 
-		if(toExpand->canMoveUp())
+
+		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D')
 			Q.push(toExpand->moveUp());
 		
-		if(toExpand->canMoveRight())
+		if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L' )
 			Q.push(toExpand->moveRight());
 		
-		if(toExpand->canMoveDown())
+		if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U')
 			Q.push(toExpand->moveDown());
 			
-		if(toExpand->canMoveLeft()) 
+		if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') 
 			Q.push(toExpand->moveLeft());	
 
 		if(maxQLength < Q.size()) maxQLength = Q.size(); 
@@ -75,13 +78,8 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//
-// Search Algorithm:  Breadth-First Search with VisitedList
-//
-// Move Generator:  
-//
-////////////////////////////////////////////////////////////////////////////////////////////
+
+
 string breadthFirstSearch_with_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
 
     string path;
@@ -114,7 +112,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 		//Dequeue the front state. 
 		Q.pop();
 
-		if(toExpand->canMoveUp()){
+		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
 			bool skip = false;
 			temp = V;
 			while(!temp.empty()) {
@@ -131,7 +129,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 			
 		}
 		
-		if(toExpand->canMoveRight()){
+		if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L'){
 			bool skip = false;
 			temp = V;			
 			while(!temp.empty()) {
@@ -147,7 +145,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 			}
 		}
 		
-		if(toExpand->canMoveDown()){
+		if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U'){
 			bool skip = false;
 			temp = V;			
 			while(!temp.empty()) {
@@ -163,7 +161,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 			}
 		}
 			
-		if(toExpand->canMoveLeft()){
+		if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R'){
 			bool skip = false;
 			temp = V;			
 			while(!temp.empty()) {
@@ -184,16 +182,18 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 		numOfStateExpansions++;
 
 		delete toExpand;
-
 	}
 	
 //***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	return path;		
-
-
+	return path;
 
 }
+
+
+
+
+
 
 
 
