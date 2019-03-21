@@ -79,7 +79,7 @@ void Puzzle::updateHCost(heuristicFunction hFunction){
 }
 
 void Puzzle::updateFCost(){
-	//fCost = ?
+	fCost = pathLength + hCost;
 }
 
 int Puzzle::getFCost(){
@@ -182,31 +182,23 @@ bool Puzzle::canMoveDown(){
 //these functions will be useful for Progressive Deepening Search 
 
 bool Puzzle::canMoveLeft(int maxDepth){
-  	
-  	bool m=false;
-  	//put your implementations here
-  	return m; 
-}
-bool Puzzle::canMoveRight(int maxDepth){
-   
-  	bool m=false;
-  	//put your implementations here
-  	return m; 
+  	if(depth < maxDepth) return canMoveLeft();
+  	else return false;
 }
 
+bool Puzzle::canMoveRight(int maxDepth){
+   if(depth < maxDepth) return canMoveRight();
+  	else return false;
+}
 
 bool Puzzle::canMoveUp(int maxDepth){
-   
-  	bool m=false;
-  	//put your implementations here
-  	return m; 
+   if(depth < maxDepth) return canMoveUp();
+  	else return false;
 }
 
 bool Puzzle::canMoveDown(int maxDepth){
-   
-  	bool m=false;
-  	//put your implementations here
-  	return m; 
+   if(depth < maxDepth) return canMoveDown();
+  	else return false;
 }
 
 ///////////////////////////////////////////////
