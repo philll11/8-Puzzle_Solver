@@ -2,6 +2,7 @@
 #include <typeinfo>
 #include "algorithm.h"
 #include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -48,7 +49,7 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 		//Dequeue the front state. 
 		Q.pop();
 
-
+		//Expand the states in the given order
 		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D')
 			Q.push(toExpand->moveUp());
 		
@@ -205,28 +206,70 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 string progressiveDeepeningSearch_No_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int ultimateMaxDepth){
-    string path;
-	clock_t startTime;
-    //add necessary variables here
+   	string path;
+	clock_t startTime = clock();
+
+	//Use a stack to hold the Queued States
+    stack<Puzzle*> stackQueuedStates;
+    maxQLength = 0;
+
+    //Set the intervalDepth (C) for the first depth search
+    int intervalDepth = 0;
+
+    //Check that we haven't gone over the ultimateMaxDepth for this iteration
+    while(intervalDepth <= ultimateMaxDepth){
+    	
+    	 //Instatiate the board from the argv, and push onto the stack  
+    							//argv[3]     //argv[4]
+	   	Puzzle *begin = new Puzzle(initialState, goalState);
+	    stackQueuedStates.push(begin);
+	    
+	    //Continue the algorithm until the stack is empty
+		while(!stackQueuedStates.empty()){
+
+			//Get the top element (state) from the stack
+			Puzzle *toExpand = stackQueuedStates.top();
 
 
-    //algorithm implementation
-	// cout << "------------------------------" << endl;
- //    cout << "<<progressiveDeepeningSearch_No_VisitedList>>" << endl;
- //    cout << "------------------------------" << endl;
+			std::cout << toExpand->getPath() << endl; //DEBUG DELETE IN FINAL
 
-	startTime = clock();
-	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-	maxQLength= rand() % 500; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-	numOfStateExpansions = rand() % 600; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
+			//If the goalMatch (board == goalBoard) is true, get the path and return it
+			if(toExpand->goalMatch()) { 
+				path = toExpand->getPath();
+				actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+				return path;	 				
+			}
 
-	
-	
-//***********************************************************************************************************
-	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	path = "DDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUUDDRRLLLUUURDLUDURDLUU";  //this is just a dummy path for testing the function           
-	return path;		
-		
+			//Pop the top Queued States from the stack
+			stackQueuedStates.pop();
+
+
+			//Expand the states and push onto stack if can move within depth level
+			if(toExpand->canMoveUp(intervalDepth) && toExpand->getPath().back() != 'D')
+				stackQueuedStates.push(toExpand->moveUp());
+			
+			if(toExpand->canMoveRight(intervalDepth) && toExpand->getPath().back() != 'L' )
+				stackQueuedStates.push(toExpand->moveRight());
+			
+			if(toExpand->canMoveDown(intervalDepth) && toExpand->getPath().back() != 'U')
+				stackQueuedStates.push(toExpand->moveDown());
+				
+			if(toExpand->canMoveLeft(intervalDepth) && toExpand->getPath().back() != 'R') 
+				stackQueuedStates.push(toExpand->moveLeft());	
+
+			if(maxQLength < stackQueuedStates.size()) maxQLength = stackQueuedStates.size(); 
+			
+			//Increment state expensions
+			numOfStateExpansions++;
+
+			delete toExpand;
+
+		}
+		//If goal is not found, increment the interval depth level (C) for the next iteration
+		intervalDepth++;
+    }	
+    actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+	return path;	 				
 }
 	
 
