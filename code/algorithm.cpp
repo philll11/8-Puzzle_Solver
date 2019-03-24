@@ -3,6 +3,7 @@
 #include "algorithm.h"
 #include <queue>
 #include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -37,8 +38,6 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 		
 		//Get the front element (state) from the Q
 		Puzzle *toExpand = Q.front();
-
-		//std::cout << toExpand->getPath() << endl;
 
 		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
 		if(toExpand->goalMatch()) { 
@@ -192,12 +191,6 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 }
 
 
-
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
 // Search Algorithm:  
@@ -229,9 +222,6 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 
 			//Get the top element (state) from the stack
 			Puzzle *toExpand = stackQueuedStates.top();
-
-
-			std::cout << toExpand->getPath() << endl; //DEBUG DELETE IN FINAL
 
 			//If the goalMatch (board == goalBoard) is true, get the path and return it
 			if(toExpand->goalMatch()) { 
@@ -285,29 +275,116 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 string uniformCost_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, 
                                float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions){
 											 
-   string path;
-   clock_t startTime;
-   
-   numOfDeletionsFromMiddleOfHeap=0;
-   numOfLocalLoopsAvoided=0;
-   numOfAttemptedNodeReExpansions=0;
+   	clock_t startTime;
+   	
+   	numOfDeletionsFromMiddleOfHeap=0;
+	numOfLocalLoopsAvoided=0;
+	numOfAttemptedNodeReExpansions=0;
 
-
-    // cout << "------------------------------" << endl;
-    // cout << "<<uniformCost_ExpandedList>>" << endl;
-    // cout << "------------------------------" << endl;
-	actualRunningTime=0.0;	
-	startTime = clock();
-	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-	maxQLength= rand() % 200; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-	numOfStateExpansions = rand() % 200; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
-
-
+   	vector<Puzzle*> Q;
+    vector<string> expandedList;
+    maxQLength = 0;    
+    string path;
 	
-	
+
+    //Instatiate the board from the argv, and push onto the queue, incrementing the length    
+    							//argv[3]     //argv[4]
+    Puzzle *begin = new Puzzle(initialState, goalState);
+    Q.push_back(begin);
+    maxQLength++;
+
+    //Continue the algorithm until the Q is empty
+	while(!Q.empty()){
+		
+		// Finds the shortest path in Q
+		Puzzle* toExpand = Q.front();
+		int index = 0;
+		for(int i = 0; i < Q.size(); ++i) {
+			if(Q[i]->getPathLength() < toExpand->getPathLength()) {
+				toExpand = Q[i];
+				index = i;
+			}
+		}
+
+
+		// Adds expanded to path to expanded list.
+		expandedList.push_back(toExpand->toString());
+
+		//	If the goalMatch (board == goalBoard) is true, get the path and break from the loop
+		if(toExpand->goalMatch()) { 
+			path = toExpand->getPath(); 
+			break;
+		}
+
+		// Removes shortest state from Q
+		Q.erase(Q.begin() + index);
+
+
+		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
+			bool skip = false;
+			for(int i=0;i<expandedList.size();++i){
+				if(expandedList[i] == toExpand->moveUp()->toString()){
+					skip = true;
+					++numOfAttemptedNodeReExpansions;
+					break;
+				}
+			}
+			if(skip == false) {
+				Q.push_back(toExpand->moveUp());
+			}
+		}
+		
+		if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L' ) {
+			bool skip = false;
+			for(int i=0;i<expandedList.size();++i){
+				if(expandedList[i] == toExpand->moveRight()->toString()){
+					skip = true;
+					++numOfAttemptedNodeReExpansions;
+					break;
+				}
+			}
+			if(skip == false) {
+				Q.push_back(toExpand->moveRight());
+			}
+		}
+		
+		if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
+			bool skip = false;
+			for(int i=0;i<expandedList.size();++i){
+				if(expandedList[i] == toExpand->moveDown()->toString()){
+					skip = true;
+					++numOfAttemptedNodeReExpansions;
+					break;
+				}
+			}
+			if(skip == false) {
+				Q.push_back(toExpand->moveDown());
+			}
+		}
+			
+		if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
+			bool skip = false;
+			for(int i=0;i<expandedList.size();++i){
+				if(expandedList[i] == toExpand->moveLeft()->toString()){
+					skip = true;
+					++numOfAttemptedNodeReExpansions;
+					break;
+				}
+			}
+			if(skip == false) {
+				Q.push_back(toExpand->moveLeft());
+			}
+		}
+
+		if(maxQLength < Q.size()) maxQLength = Q.size(); 
+		
+		numOfStateExpansions++;
+
+		delete toExpand;
+
+	}
 //***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	path = "DDRRLLLUUURDLUDURDLUU"; //this is just a dummy path for testing the function
 	             
 	return path;		
 		
