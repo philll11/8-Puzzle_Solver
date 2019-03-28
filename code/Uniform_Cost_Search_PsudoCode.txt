@@ -1,0 +1,17 @@
+Uniform Cost Search w/ Expanded List algorithm:
+
+1) Initialise Q with search node (S) as only entry; set Expanded = 0
+
+2) If Q is empty, fail. Else, pick some search node N from Q.
+
+3) If state (N) is a goal, return N (we've reached the goal).
+
+4) otherwise Remove N from Q.
+
+5) If state (N) in Expanded, go to Step 2; otherwise, add state (N) to Expanded List.
+
+6) Find all the descendants of state (N) (not in Expanded) and create all the one-step extensions of N to each descendant.
+
+7) Add the extended paths to Q. If descendant state already in Q, keep only shorter path to state in Q.
+
+8) go to step 2

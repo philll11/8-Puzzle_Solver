@@ -41,8 +41,9 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 
 		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
 		if(toExpand->goalMatch()) { 
-			path = toExpand->getPath(); 
-			break;
+			path = toExpand->getPath();
+			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+			return path;
 		}
 
 		//Dequeue the front state. 
@@ -72,7 +73,7 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 //***********************************************************************************************************
 	
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	return path;
+	return "No path was found";
 }
 // Leonard (2:30pm - 13/02/19)
 
@@ -95,6 +96,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
     							//argv[3]     //argv[4]
     Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push(begin);
+	V.push(begin->toString());
     maxQLength++;
 
     //Continue the algorithm until the Q is empty
@@ -105,8 +107,9 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 
 		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
 		if(toExpand->goalMatch()) { 
-			path = toExpand->getPath(); 
-			break;
+			path = toExpand->getPath();
+			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+			return path;
 		}
 
 		//Dequeue the front state. 
@@ -186,7 +189,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 	
 //***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	return path;
+	return "No path was found";
 
 }
 
@@ -227,7 +230,7 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 			if(toExpand->goalMatch()) { 
 				path = toExpand->getPath();
 				actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-				return path;	 				
+				return path;
 			}
 
 			//Pop the top Queued States from the stack
@@ -259,7 +262,7 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 		intervalDepth++;
     }	
     actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	return path;	 				
+	return "No path was found";	 				
 }
 	
 
@@ -311,13 +314,15 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 		expandedList.push_back(toExpand->toString());
 
 		//	If the goalMatch (board == goalBoard) is true, get the path and break from the loop
-		if(toExpand->goalMatch()) { 
-			path = toExpand->getPath(); 
-			break;
+		if(toExpand->goalMatch()) {			 
+			path = toExpand->getPath();
+			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+			return path;
 		}
 
 		// Removes shortest state from Q
 		Q.erase(Q.begin() + index);
+		++numOfDeletionsFromMiddleOfHeap;
 
 
 		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
@@ -384,9 +389,8 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 
 	}
 //***********************************************************************************************************
-	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	             
-	return path;		
+	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);	             
+	return "No path returned";
 		
 }
 
