@@ -338,7 +338,7 @@ try{
 	//Run algorithm
 
     if(algorithmSelected == "breadth_first_search" ){
-        cout<<"P>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ath = "<<path<<endl;
+        cout<<"P>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ath = "<<path<<endl;        
         path = breadthFirstSearch(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime);
         
 

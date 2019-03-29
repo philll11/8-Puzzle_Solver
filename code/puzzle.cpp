@@ -97,28 +97,62 @@ int Puzzle::getGCost(){
 //Heuristic function implementation
 int Puzzle::h(heuristicFunction hFunction){
 	
-	int sum=0;
-	int h=0;
 	int numOfMisplacedTiles=0;
+	int h=0, sum=0, target=1, x1=0, x2=0, y1=0, y2=0;
 	
 	switch(hFunction){
-		case misplacedTiles:			      
-				//place your implementation here	
-                h = numOfMisplacedTiles; 					
-		        break;
+		case misplacedTiles:
+			while(target <= 9) {
+				for(int i = 0; i < 3; ++i) {
+		        	for(int j = 0; j < 3; ++j) {
+		        		if(board[i][j] == target) {
+		        			x1 = j;
+		        			y1 = i;
+		        		}
+					}
+		        }
+				for(int i = 0; i < 3; ++i) {
+		        	for(int j = 0; j < 3; ++j) {
+		        		if(goalBoard[i][j] == target) {
+		        			x2 = j;
+		        			y2 = i;
+		        		}
+					}
+		        }
+		        if(x1 != x2 || y1 != y2) {
+		        	++numOfMisplacedTiles;
+		        }
+		        ++target;		        
+			}
+			h = numOfMisplacedTiles; 					
+		    break;
 		         
 		case manhattanDistance:
-		        //place your implementation here
-		        
-		        h = sum; 					
-		        break;         
-		           
-	};
-	
+			while(target <= 9) {
+				for(int i = 0; i < 3; ++i) {
+		        	for(int j = 0; j < 3; ++j) {
+		        		if(board[i][j] == target) {
+		        			x1 = j;
+		        			y1 = i;
+		        		}
+					}
+		        }
+				for(int i = 0; i < 3; ++i) {
+		        	for(int j = 0; j < 3; ++j) {
+		        		if(goalBoard[i][j] == target) {
+		        			x2 = j;
+		        			y2 = i;
+		        		}
+					}
+		        }
+		        sum += abs((x1-x2))+abs((y1-y2));
+		        ++target;		        
+			}	        
+	        h = sum;			
+	        break;		           
+	};	
 	return h;
-	
 }
-
 
 //converts board state into its string representation
 string Puzzle::toString(){

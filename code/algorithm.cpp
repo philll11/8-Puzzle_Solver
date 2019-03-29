@@ -101,6 +101,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
     							//argv[3]     //argv[4]
     Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push(begin);
+	V.push(begin->toString());
     maxQLength++;
 
     //Continue the algorithm until the Q is empty
@@ -238,7 +239,7 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 			if(toExpand->goalMatch()) { 
 				path = toExpand->getPath();
     			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-				return path;	 				
+				return path;
 			}
 
 			//Pop the top Queued States from the stack
@@ -363,7 +364,6 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 			expandedList.push_back(new Puzzle(*toExpand));
 
 			if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
-				++numOfStateExpansions;
 				skip = false;
 				for(int i=0; i < Q.size(); ++i){
 					if(Q[i]->toString() == toExpand->moveUp()->toString()){
@@ -371,19 +371,19 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 						if(toExpand->moveUp()->getPathLength() < Q[i]->getPathLength()) {
 							Q.erase(Q.begin() + i);
 							Q.push_back(toExpand->moveUp());
-							++numOfDeletionsFromMiddleOfHeap;		
-							break;
+							++numOfDeletionsFromMiddleOfHeap;
+							++numOfStateExpansions;
 						}
 					}
 				}
 				if(skip == false) {
 					Q.push_back(toExpand->moveUp());
+					++numOfStateExpansions;
 				}
 			}
 
 			
 			if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
-				++numOfStateExpansions;
 				skip = false;
 				for(int i=0; i < Q.size(); ++i){
 					if(Q[i]->toString() == toExpand->moveRight()->toString()){
@@ -392,17 +392,17 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 							Q.erase(Q.begin() + i);
 							Q.push_back(toExpand->moveRight());
 							++numOfDeletionsFromMiddleOfHeap;
-							break;
+							++numOfStateExpansions;
 						}
 					}
 				}
 				if(skip == false) {
 					Q.push_back(toExpand->moveRight());
+					++numOfStateExpansions;
 				}
 			}
 						
 			if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
-				++numOfStateExpansions;
 				skip = false;
 				for(int i=0; i < Q.size(); ++i){
 					if(Q[i]->toString() == toExpand->moveDown()->toString()){
@@ -411,17 +411,17 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 							Q.erase(Q.begin() + i);
 							Q.push_back(toExpand->moveDown());
 							++numOfDeletionsFromMiddleOfHeap;
-							break;
+							++numOfStateExpansions;
 						}
 					}
 				}
 				if(skip == false) {
 					Q.push_back(toExpand->moveDown());
+					++numOfStateExpansions;
 				}
 			}
 
 			if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
-				++numOfStateExpansions;
 				skip = false;
 				for(int i=0; i < Q.size(); ++i){
 					if(Q[i]->toString() == toExpand->moveLeft()->toString()){
@@ -430,12 +430,13 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 							Q.erase(Q.begin() + i);
 							Q.push_back(toExpand->moveLeft());
 							++numOfDeletionsFromMiddleOfHeap;
-							break;
+							++numOfStateExpansions;
 						}
 					}
 				}
 				if(skip == false) {
 					Q.push_back(toExpand->moveLeft());
+					++numOfStateExpansions;
 				}				
 			}
 			if(maxQLength < Q.size()){ maxQLength = Q.size(); }
@@ -448,8 +449,6 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 		
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);		
 	return "No path was found";
-
-//***********************************************************************************************************
 		
 }
 
@@ -471,25 +470,155 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
    numOfLocalLoopsAvoided=0;
    numOfAttemptedNodeReExpansions=0;
 
+	//Create a queue to hold the states
+    vector<Puzzle*> Q;
+	vector<Puzzle*> expandedList;
 
-    // cout << "------------------------------" << endl;
-    // cout << "<<aStar_ExpandedList>>" << endl;
-    // cout << "------------------------------" << endl;
-	actualRunningTime=0.0;	
-	startTime = clock();
-	srand(time(NULL)); //RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-	maxQLength= rand() % 200; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-	numOfStateExpansions = rand() % 200; //AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
-
-
+    maxQLength = 0;
 	
-	
-//***********************************************************************************************************
-	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	path = "DDRRLLLUUURDLUDURDLUU"; //this is just a dummy path for testing the function
-	             
-	return path;		
+    // Control variables
+    bool stateInExpandedList = false;
+    bool expandedListEmpty = true;
+    bool skip;
+
+
+    //Instatiate the board from the argv, and push onto the queue, incrementing the length    
+    							//argv[3]     //argv[4]
+    Puzzle *begin = new Puzzle(initialState, goalState);
+    begin->updateHCost(heuristic);
+    begin->updateFCost();
+    Q.push_back(begin);
+    maxQLength++;
+
+    //Continue the algorithm until the Q is empty
+	while(!Q.empty()){
 		
+		//Get the front element (state) from the Q
+		Puzzle *toExpand = Q.front();
+		int index = 0;
+		for(int i = 1; i < Q.size(); ++i) {
+			if(toExpand->getFCost() > Q[i]->getFCost()) {
+				toExpand = Q[i];
+				index = i;
+			}
+		}
+	    toExpand->updateHCost(heuristic);
+	    toExpand->updateFCost();
+
+		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
+		if(toExpand->goalMatch()) { 
+			path = toExpand->getPath();
+			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);	
+			return path;
+		}
+
+		//Dequeue the front state. 
+		Q.erase(Q.begin() + index);
+
+		// Prevents expandedList from being empty on first iteration
+		if(expandedListEmpty == false) {
+			// Check toExpand (N) is not in expandedList
+			for(int i = 0; i < expandedList.size(); ++i) {
+				if(expandedList[i]->toString() == toExpand->toString()) {
+					stateInExpandedList = true;
+					++numOfAttemptedNodeReExpansions;
+					break;
+				}
+			}
+		}
+
+		// If state in EL then prevent expanding toExpand
+		if(stateInExpandedList == false) {
+
+			// Add toExpand (N) to EL
+			expandedList.push_back(new Puzzle(*toExpand));
+
+			if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
+				++numOfStateExpansions;
+				skip = false;
+				for(int i=0; i < expandedList.size(); ++i){
+					if(toExpand->moveUp()->toString() == expandedList[i]->toString()){
+						skip = true;
+						if(toExpand->moveUp()->getFCost() < expandedList[i]->getFCost()) {
+							expandedList.erase(expandedList.begin() + i);
+							Q.push_back(toExpand->moveUp());
+							++numOfDeletionsFromMiddleOfHeap;
+							++numOfStateExpansions;
+						}
+					}
+				}
+				if(skip == false) {
+					Q.push_back(toExpand->moveUp());
+					++numOfStateExpansions;
+				}
+			}
+
+			
+			if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
+				skip = false;
+				for(int i=0; i < expandedList.size(); ++i){
+					if(toExpand->moveRight()->toString() == expandedList[i]->toString()){
+						skip = true;
+						if(toExpand->moveRight()->getFCost() < expandedList[i]->getFCost()) {
+							expandedList.erase(expandedList.begin() + i);
+							Q.push_back(toExpand->moveRight());
+							++numOfDeletionsFromMiddleOfHeap;
+							++numOfStateExpansions;
+						}
+					}
+				}
+				if(skip == false) {
+					Q.push_back(toExpand->moveRight());
+					++numOfStateExpansions;
+				}
+			}
+						
+			if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
+				skip = false;
+				for(int i=0; i < expandedList.size(); ++i){
+					if(toExpand->moveDown()->toString() == expandedList[i]->toString()){
+						skip = true;
+						if(toExpand->moveDown()->getFCost() < expandedList[i]->getFCost()) {
+							expandedList.erase(expandedList.begin() + i);
+							Q.push_back(toExpand->moveDown());
+							++numOfDeletionsFromMiddleOfHeap;
+							++numOfStateExpansions;
+						}
+					}
+				}
+				if(skip == false) {
+					Q.push_back(toExpand->moveDown());
+					++numOfStateExpansions;
+				}
+			}
+
+			if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
+				skip = false;
+				for(int i=0; i < expandedList.size(); ++i){
+					if(toExpand->moveLeft()->toString() == expandedList[i]->toString()){
+						skip = true;
+						if(toExpand->moveLeft()->getFCost() < expandedList[i]->getFCost()) {
+							expandedList.erase(expandedList.begin() + i);
+							Q.push_back(toExpand->moveLeft());
+							++numOfDeletionsFromMiddleOfHeap;
+							++numOfStateExpansions;
+						}
+					}
+				}
+				if(skip == false) {
+					Q.push_back(toExpand->moveLeft());
+					++numOfStateExpansions;
+				}				
+			}
+			if(maxQLength < Q.size()){ maxQLength = Q.size(); }
+			
+		}
+		expandedListEmpty = false;
+		stateInExpandedList = false;
+		delete toExpand;
+	}	
+	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+	return "No path was found";		
 }
 
 

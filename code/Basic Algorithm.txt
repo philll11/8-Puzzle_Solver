@@ -1,6 +1,6 @@
 Basic algorithm:
 
-1) Initialise Q with search node (S) as only entry; set vistied = (S)
+1) Initialise Q with search node (S) as only entry; set Visited = (S)
 
 2) If Q is empty, fail. Else, pick some search node N from Q.
 
