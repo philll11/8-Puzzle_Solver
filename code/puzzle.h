@@ -4,7 +4,7 @@
 using namespace std;
 
 
-enum heuristicFunction{misplacedTiles, manhattanDistance};
+enum heuristicFunction{misplacedTiles, manhattanDistance, none};
 
 
 class Puzzle{
@@ -36,7 +36,7 @@ public:
     // }     
 
     Puzzle(const Puzzle &p); //Constructor
-    Puzzle(string const elements, string const goal);
+    Puzzle(string const elements, string const goal, heuristicFunction hFunction);
      
     void printBoard();
     
@@ -70,10 +70,10 @@ public:
 	 bool canMoveUp(int maxDepth);	 
 //----------------------------------------
 	  
-    Puzzle * moveLeft();
-    Puzzle * moveRight();
-    Puzzle * moveUp();
-    Puzzle * moveDown();
+    Puzzle * moveLeft(heuristicFunction hFunction);
+    Puzzle * moveRight(heuristicFunction hFunction);
+    Puzzle * moveUp(heuristicFunction hFunction);
+    Puzzle * moveDown(heuristicFunction hFunction);
 	 
 	 
     const string getPath();
