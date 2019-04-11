@@ -233,7 +233,7 @@ void AnimateSolution(string const initialState, string const goalState, string p
 	    cout << "Plan of action = " << path << endl;
 	}
 	
-	Puzzle *p = new Puzzle(initialState, goalState, none);
+	Puzzle *p = new Puzzle(initialState, goalState);
     Puzzle *nextState;
 	
 	string strState;
@@ -248,13 +248,13 @@ void AnimateSolution(string const initialState, string const goalState, string p
 	   cout << endl << "Step #" << step << ")  ";
 	   switch(path[i]){
 			
-			case 'U': nextState = p->moveUp(none); cout << "[UP]" << endl;
+			case 'U': nextState = p->moveUp(); cout << "[UP]" << endl;
 			          break;
-			case 'D': nextState = p->moveDown(none); cout << "[DOWN]" << endl;
+			case 'D': nextState = p->moveDown(); cout << "[DOWN]" << endl;
 			          break;
-			case 'L': nextState = p->moveLeft(none); cout << "[LEFT]" << endl;
+			case 'L': nextState = p->moveLeft(); cout << "[LEFT]" << endl;
 			          break;
-            case 'R': nextState = p->moveRight(none); cout << "[RIGHT]" << endl;
+            case 'R': nextState = p->moveRight(); cout << "[RIGHT]" << endl;
 			          break;
  	  }
  	  strState = nextState->toString();
@@ -338,7 +338,9 @@ try{
 	//Run algorithm
 
     if(algorithmSelected == "breadth_first_search" ){
+        cout<<"P>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ath = "<<path<<endl;        
         path = breadthFirstSearch(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime);
+        
 
     } else if(algorithmSelected == "breadth_first_search_vlist" ){
         

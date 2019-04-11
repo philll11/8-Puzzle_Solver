@@ -19,13 +19,12 @@ Puzzle::Puzzle(const Puzzle &p) : path(p.path){
 
 	x0 = p.x0;
 	y0 = p.y0;
-	path = p.path;
+	//path = p.path;
 	pathLength = p.pathLength;
+	hCost = p.hCost;
 	fCost = p.fCost;	
 	strBoard = toString(); //uses the board contents to generate the string equivalent
 	depth = p.depth;
-
-	searchNode = p.searchNode;
 	
 }
 
@@ -33,7 +32,7 @@ Puzzle::Puzzle(const Puzzle &p) : path(p.path){
 //constructor
 //inputs:  initial state, goal state
 //////////////////////////////////////////////////////////////
-Puzzle::Puzzle(string const elements, string const goal){
+Puzzle::Puzzle(string const elements, string const goal, heuristicFunction hFunction){
 	
 	int n;
 	
@@ -60,17 +59,17 @@ Puzzle::Puzzle(string const elements, string const goal){
 	///////////////////////	
 	path = "";
 	pathLength=0;
-	fCost = 0;
+	if(hFunction != none) {
+		updateHCost(hFunction);
+		updateFCost();
+	} else {
+		hCost = 0;
+		fCost = 0;
+	}
 	depth = 0;
-	strBoard = toString();
-
-	searchNode.insert(strBoard);
+	strBoard = toString();	
 }
 
-
-unordered_set<string> Puzzle::getSearchNode() {
-	return searchNode;
-}
 
 void Puzzle::setDepth(int d){
 	depth = d;
@@ -80,14 +79,25 @@ int Puzzle::getDepth(){
 	return depth;
 }
 
-void Puzzle::updateFCost(heuristicFunction hFunction){
-	fCost = pathLength + h(hFunction);
+void Puzzle::updateHCost(heuristicFunction hFunction){
+	hCost = h(hFunction);
+}
+
+void Puzzle::updateFCost(){
+	fCost = pathLength + hCost;
 }
 
 int Puzzle::getFCost(){
 	return fCost;
 }
 
+int Puzzle::getHCost(){
+	return hCost;
+}
+
+int Puzzle::getGCost(){
+	return pathLength;
+}
 
 //Heuristic function implementation
 int Puzzle::h(heuristicFunction hFunction){
@@ -232,7 +242,7 @@ bool Puzzle::canMoveDown(int maxDepth){
 
 ///////////////////////////////////////////////
 
-Puzzle *Puzzle::moveLeft(){
+Puzzle *Puzzle::moveLeft(heuristicFunction hFunction){
 	
 	Puzzle *p = new Puzzle(*this);
 	
@@ -246,19 +256,22 @@ Puzzle *Puzzle::moveLeft(){
 		
 		p->path = path + "L";
 		p->pathLength = pathLength + 1;  
-		p->depth = depth + 1; 
-		
+		p->depth = depth + 1;
+
+		if(hFunction != none) {
+			p->updateHCost(hFunction);
+			p->updateFCost();
+		}
 		
 	}
 	p->strBoard = p->toString();
-	p->searchNode.insert(p->strBoard );
 
 	return p;
 	
 }
 
 
-Puzzle *Puzzle::moveRight(){
+Puzzle *Puzzle::moveRight(heuristicFunction hFunction){
 	
    Puzzle *p = new Puzzle(*this);
 	
@@ -274,18 +287,21 @@ Puzzle *Puzzle::moveRight(){
 		p->pathLength = pathLength + 1; 
      	
 		p->depth = depth + 1;
-		
+
+		if(hFunction != none) {
+			p->updateHCost(hFunction);
+			p->updateFCost();
+		}
 	}
 	
 	p->strBoard = p->toString();
-	p->searchNode.insert(p->strBoard );
 	
 	return p;
 	
 }
 
 
-Puzzle *Puzzle::moveUp(){
+Puzzle *Puzzle::moveUp(heuristicFunction hFunction){
 	
    Puzzle *p = new Puzzle(*this);
 	
@@ -301,16 +317,20 @@ Puzzle *Puzzle::moveUp(){
 		p->pathLength = pathLength + 1;  
 	
 		p->depth = depth + 1;
-		
+
+		if(hFunction != none) {
+			p->updateHCost(hFunction);
+			p->updateFCost();
+		}		
 	}
+
 	p->strBoard = p->toString();
-	p->searchNode.insert(p->strBoard );
 	
 	return p;
 	
 }
 
-Puzzle *Puzzle::moveDown(){
+Puzzle *Puzzle::moveDown(heuristicFunction hFunction){
 	
    Puzzle *p = new Puzzle(*this);
 	
@@ -326,10 +346,13 @@ Puzzle *Puzzle::moveDown(){
 		p->pathLength = pathLength + 1;  
 		
 		p->depth = depth + 1;
-		
+
+		if(hFunction != none) {
+			p->updateHCost(hFunction);
+			p->updateFCost();
+		}
 	}
-	p->strBoard = p->toString();
-	p->searchNode.insert(p->strBoard );
+	p->strBoard = p->toString();	
 	
 	return p;
 	
@@ -351,11 +374,4 @@ void Puzzle::printBoard(){
 
 int Puzzle::getPathLength(){
 	return pathLength;
-}
-
-bool Puzzle::checkSearchNode(string state) const {
-	if (searchNode.find(state) == searchNode.end()) {
-		return true;
-	}
-	return false;
 }

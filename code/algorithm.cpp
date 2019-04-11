@@ -4,9 +4,23 @@
 #include <queue>
 #include <stack>
 #include <vector>
-#include <set>
+#include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
+
+
+//########## Questions
+//0. Concern about the running times of uniform cost on test 4
+//
+//1. Should we delete this pointer (In all algorithms)
+//		Puzzle *toExpand = Q.front();
+//
+//2. Should we check descendant state against every puzzle.searchNode in Q 
+//	 rather than just checking it against puzzle.state? (In Uniform cost and A*)
+//		if (descendant->getString() == Q[i]->getString())
+
 
 
 
@@ -18,12 +32,9 @@ using namespace std;
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-
-
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
-	clock_t startTime = clock();
-
 	string path;
+	clock_t startTime = clock();
 
 	//Create a queue to hold the states
     queue<Puzzle*> Q;
@@ -31,7 +42,7 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 
     //Instatiate the board from the argv, and push onto the queue, incrementing the length    
     							//argv[3]     //argv[4]
-    Puzzle *begin = new Puzzle(initialState, goalState, none);
+    Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push(begin);
     maxQLength++;
 
@@ -53,23 +64,31 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 
 		//Expand the states in the given order
 		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
-			Q.push(toExpand->moveUp(none));
-			++numOfStateExpansions;	
+			if (toExpand->checkSearchNode(toExpand->moveUp()->getString())) {
+				Q.push(toExpand->moveUp());
+				++numOfStateExpansions;
+			}
 		}
 		
 		if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L'){
-			Q.push(toExpand->moveRight(none));
-			++numOfStateExpansions;	
+			if (toExpand->checkSearchNode(toExpand->moveRight()->getString())) {
+				Q.push(toExpand->moveRight());
+				++numOfStateExpansions;
+			}
 		}
 		
 		if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U'){
-			Q.push(toExpand->moveDown(none));
-			++numOfStateExpansions;	
+			if (toExpand->checkSearchNode(toExpand->moveDown()->getString())) {
+				Q.push(toExpand->moveDown());
+				++numOfStateExpansions;
+			}			
 		}
 			
 		if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R'){
-			Q.push(toExpand->moveLeft(none));
-			++numOfStateExpansions;	
+			if (toExpand->checkSearchNode(toExpand->moveLeft()->getString())) {
+				Q.push(toExpand->moveLeft());
+				++numOfStateExpansions;
+			}
 		}
 
 		if(maxQLength < Q.size()) {maxQLength = Q.size();}
@@ -85,38 +104,29 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 }
 
 
-
-
-
 string breadthFirstSearch_with_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime){
-	//Create a queue to hold the states
-    
-	clock_t startTime = clock();
 
     string path;
+	clock_t startTime;
 
 	//Create a queue to hold the states
     queue<Puzzle*> Q;
-    set<size_t> V;
-    hash<string> hash;
-
+    unordered_set<string> Visited_List;
     maxQLength = 0;
-
-    // Prevents adding toExpand to V if toExpand path == V[i]
-    bool skip;
 
     //Instatiate the board from the argv, and push onto the queue, incrementing the length    
     							//argv[3]     //argv[4]
-    Puzzle *begin = new Puzzle(initialState, goalState, none);
+    Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push(begin);
-    V.insert(hash(begin->toString()));
-    maxQLength++;
+	Visited_List = begin->getSearchNode();
+    maxQLength++; 
 
     //Continue the algorithm until the Q is empty
 	while(!Q.empty()){
 		
-		//Get the front element (state) from the Q
-		Puzzle *toExpand = Q.front();
+
+		Puzzle *toExpand = Q.front();	//Get the front element (state) from the Q
+
 
 		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
 		if(toExpand->goalMatch()) { 
@@ -125,97 +135,75 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 			return path;
 		}
 
-		//Dequeue the front state. 
-		Q.pop();
+		 
+		Q.pop();   //Dequeue the front state.
 
-		cout << "toExpand hash value: " << hash(toExpand->toString()) << endl;
-		cout << "Start of the Visited List" << endl;
-		for(set<size_t>::iterator it = V.begin(); it != V.end(); ++it) {
-			cout << *it << " ";
-		}		
-		cout << "\n" << endl;
-
+		Puzzle* descendant;
 		if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
-			skip = false;			
-			for(set<size_t>::iterator it = V.begin(); it != V.end(); ++it){
-				if(hash(toExpand->toString()) == *it){
-					skip = true;
-					break;
+			descendant = toExpand->moveUp();
+			if (toExpand->checkSearchNode(descendant->getString())) {
+				if (Visited_List.find(descendant->getString()) == Visited_List.end()) {   // Checks whether descendant is not in Visited List
+					Q.push(descendant);
+					Visited_List.insert(descendant->getString());
+					++numOfStateExpansions;
 				}
-			}
-			if(skip == false) {
-				Q.push(toExpand->moveUp(none));
-				numOfStateExpansions++;
-				V.insert(hash(toExpand->moveUp(none)->toString()));
-			}			
-		}
-
-		if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L'){
-			skip = false;
-			for(set<size_t>::iterator it = V.begin(); it != V.end(); ++it){
-				if(hash(toExpand->toString()) == *it){
-					skip = true;
-					break;
-				}
-			}
-			if(skip == false) {
-				Q.push(toExpand->moveRight(none));
-				numOfStateExpansions++;
-				V.insert(hash(toExpand->moveRight(none)->toString()));
 			}
 		}
 		
-		if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U'){
-			skip = false;
-			for(set<size_t>::iterator it = V.begin(); it != V.end(); ++it){
-				if(hash(toExpand->toString()) == *it){
-					skip = true;
-					break;
+		if (toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
+			descendant = toExpand->moveRight();
+			if (toExpand->checkSearchNode(descendant->getString())) {
+				if (Visited_List.find(descendant->getString()) == Visited_List.end()) {    // Checks whether descendant is not in Visited List
+					Q.push(descendant);
+					Visited_List.insert(descendant->getString());
+					++numOfStateExpansions;
 				}
 			}
-			if(skip == false) {
-				Q.push(toExpand->moveDown(none));
-				numOfStateExpansions++;
-				V.insert(hash(toExpand->moveDown(none)->toString()));
+		}
+		
+		if (toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
+			descendant = toExpand->moveDown();
+			if (toExpand->checkSearchNode(descendant->getString())) {
+				if (Visited_List.find(descendant->getString()) == Visited_List.end()) {   // Checks whether descendant is not in Visited List
+					Q.push(descendant);
+					Visited_List.insert(descendant->getString());
+					++numOfStateExpansions;
+				}
 			}
 		}
 			
-		if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R'){
-			skip = false;
-			for(set<size_t>::iterator it = V.begin(); it != V.end(); ++it){
-				if(hash(toExpand->toString()) == *it){
-					skip = true;
-					break;
+		if (toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
+			descendant = toExpand->moveLeft();
+			if (toExpand->checkSearchNode(descendant->getString())) {
+				if (Visited_List.find(descendant->getString()) == Visited_List.end()) {   // Checks whether descendant is not in Visited List
+					Q.push(descendant);
+					Visited_List.insert(descendant->getString());
+					++numOfStateExpansions;
 				}
-			}
-			if(skip == false) {
-				Q.push(toExpand->moveLeft(none));
-				numOfStateExpansions++;
-				V.insert(hash(toExpand->moveLeft(none)->toString()));
 			}
 		}
 
-		if(maxQLength < Q.size()){ maxQLength = Q.size(); } 
+		if(maxQLength < Q.size()){ maxQLength = Q.size(); } 		
 		
-		delete toExpand;
 	}
-
+	
+//***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
 	return "No path was found";
+
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
-// Search Algorithm:  
+// Search Algorithm: Progressive Deeping Search
 //
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 string progressiveDeepeningSearch_No_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int ultimateMaxDepth){
-	clock_t startTime = clock();
-
    	string path;
+	clock_t startTime = clock();
 
 	//Use a stack to hold the Queued States
     stack<Puzzle*> stackQueuedStates;
@@ -229,7 +217,7 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
     	
     	 //Instatiate the board from the argv, and push onto the stack  
     							//argv[3]     //argv[4]
-	   	Puzzle *begin = new Puzzle(initialState, goalState, none);
+	   	Puzzle *begin = new Puzzle(initialState, goalState);
 	    stackQueuedStates.push(begin);
 	    
 	    //Continue the algorithm until the stack is empty
@@ -252,27 +240,36 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 			//Expand the states and push onto stack if can move within depth level
 				
 			if(toExpand->canMoveLeft(intervalDepth) && toExpand->getPath().back() != 'R') {
-				stackQueuedStates.push(toExpand->moveLeft(none));
-				numOfStateExpansions++;
+				if (toExpand->checkSearchNode(toExpand->moveLeft()->getString())) {
+					stackQueuedStates.push(toExpand->moveLeft());
+					numOfStateExpansions++;
+				}
 			} 
 			
 			if(toExpand->canMoveDown(intervalDepth) && toExpand->getPath().back() != 'U'){
-				stackQueuedStates.push(toExpand->moveDown(none));
-				numOfStateExpansions++;
+				if (toExpand->checkSearchNode(toExpand->moveLeft()->getString())) {
+					stackQueuedStates.push(toExpand->moveDown());
+					numOfStateExpansions++;
+				}
 			}
 			
 			if(toExpand->canMoveRight(intervalDepth) && toExpand->getPath().back() != 'L' ){
-				stackQueuedStates.push(toExpand->moveRight(none));
-				numOfStateExpansions++;
+				if (toExpand->checkSearchNode(toExpand->moveLeft()->getString())) {
+					stackQueuedStates.push(toExpand->moveRight());
+					numOfStateExpansions++;
+				}
 			}
 
 			if(toExpand->canMoveUp(intervalDepth) && toExpand->getPath().back() != 'D'){
-				stackQueuedStates.push(toExpand->moveUp(none));
-				numOfStateExpansions++;
+				if (toExpand->checkSearchNode(toExpand->moveLeft()->getString())) {
+					stackQueuedStates.push(toExpand->moveUp());
+					numOfStateExpansions++;
+				}
 			}
 
 			if(maxQLength < stackQueuedStates.size()) {maxQLength = stackQueuedStates.size();} 
 			
+
 			delete toExpand;
 
 		}
@@ -293,11 +290,11 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-string uniformCost_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions) {
-	clock_t startTime = clock();
+string uniformCost_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions){
 
-    string path; 
-
+					
+   clock_t startTime;
+   
 	numOfDeletionsFromMiddleOfHeap=0;
 	numOfLocalLoopsAvoided=0;
 	numOfAttemptedNodeReExpansions=0;
@@ -305,27 +302,22 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 
 	//Create a queue to hold the states
     vector<Puzzle*> Q;
-	set<pair<size_t, int>> expandedList;
-	hash<string> hash;
+	unordered_set<string> Expanded_List;
 
     maxQLength = 0;
+    string path;
 	
-
-    // Control variables
-    bool stateInExpandedList = false;
-    bool expandedListEmpty = true;
-    bool skip;
-
 
     //Instatiate the board from the argv, and push onto the queue, incrementing the length    
     							//argv[3]     //argv[4]
-    Puzzle *begin = new Puzzle(initialState, goalState, none);
+    Puzzle *begin = new Puzzle(initialState, goalState);
     Q.push_back(begin);
     maxQLength++;
 
     //Continue the algorithm until the Q is empty
-    while(!Q.empty()){
-    	//Get the front element (state) from the Q
+	while(!Q.empty()){
+		
+		//Get the front element (state) from the Q
 		Puzzle *toExpand = Q.front();
 		int index = 0;
 		for(int i = 1; i < Q.size(); ++i) {
@@ -345,113 +337,115 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 		//Dequeue the front state. 
 		Q.erase(Q.begin() + index);
 
-		// Prevents expandedList from being empty on first iteration
-		if(expandedListEmpty == false) {
-			// Check toExpand (N) is not in expandedList
-			for(set<pair<size_t,int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-				pair<size_t,int> key_value = *it;
-				if(key_value.first == hash(toExpand->toString())){
-					stateInExpandedList = true;
-					++numOfAttemptedNodeReExpansions;
-					break;					
+		// Check toExpand (N) is not in Expanded_List
+		if (Expanded_List.find(toExpand->getString()) == Expanded_List.end()) {
+			Expanded_List.insert(toExpand->getString());   // Adds state to EL
+
+			Puzzle* descendant;
+			if (toExpand->canMoveUp() && toExpand->getPath().back() != 'D') {
+				descendant = toExpand->moveUp();
+				if (toExpand->checkSearchNode(descendant->getString())) {
+					if (Expanded_List.find(descendant->getString()) == Expanded_List.end()) {   // Checks whether descendant is not in Expanded List			
+						bool descendInQ = false;
+						for (unsigned i = 0; i < Q.size(); ++i) { // Checks whether descendant is in Q					
+							if (descendant->getString() == Q[i]->getString()) { // If descendant not in Q, descendInQ will never be true
+								descendInQ = true;
+								if (descendant->getPathLength() < Q[i]->getPathLength()) { // Compares path lengths and keeps shorter path
+									Q.erase(Q.begin() + i);
+									Q.push_back(descendant);
+									++numOfStateExpansions;
+									break;
+								}
+							}
+						}
+						if (descendInQ == false) {
+							Q.push_back(descendant);
+							++numOfStateExpansions;
+						}
+					}
+				}
+			}
+
+			if (toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
+				descendant = toExpand->moveRight();
+				if (toExpand->checkSearchNode(descendant->getString())) {
+					if (Expanded_List.find(descendant->getString()) == Expanded_List.end()) {   // Checks whether descendant is not in Expanded List
+						bool descendInQ = false;
+						for (unsigned i = 0; i < Q.size(); ++i) { // Checks whether descendant is in Q					
+							if (descendant->getString() == Q[i]->getString()) { // If descendant not in Q, descendInQ will never be true
+								descendInQ = true;
+								if (descendant->getPathLength() < Q[i]->getPathLength()) { // Compares path lengths and keeps shorter path
+									Q.erase(Q.begin() + i);
+									Q.push_back(descendant);
+									++numOfStateExpansions;
+									break;
+								}
+							}
+						}
+						if (descendInQ == false) {
+							Q.push_back(descendant);
+							++numOfStateExpansions;
+						}
+					}
+				}
+			}
+
+			if (toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
+				descendant = toExpand->moveDown();
+				if (toExpand->checkSearchNode(descendant->getString())) {
+					if (Expanded_List.find(descendant->getString()) == Expanded_List.end()) {   // Checks whether descendant is not in Expanded List
+						bool descendInQ = false;
+						for (unsigned i = 0; i < Q.size(); ++i) { // Checks whether descendant is in Q					
+							if (descendant->getString() == Q[i]->getString()) { // If descendant not in Q, descendInQ will never be true
+								descendInQ = true;
+								if (descendant->getPathLength() < Q[i]->getPathLength()) { // Compares path lengths and keeps shorter path
+									Q.erase(Q.begin() + i);
+									Q.push_back(descendant);
+									++numOfStateExpansions;
+									break;
+								}
+							}
+						}
+						if (descendInQ == false) {
+							Q.push_back(descendant);
+							++numOfStateExpansions;
+						}
+					}
+				}
+			}
+
+			if (toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
+				descendant = toExpand->moveLeft();
+				if (toExpand->checkSearchNode(descendant->getString())) {
+					if (Expanded_List.find(descendant->getString()) == Expanded_List.end()) {   // Checks whether descendant is not in Expanded List
+						bool descendInQ = false;
+						for (unsigned i = 0; i < Q.size(); ++i) { // Checks whether descendant is in Q					
+							if (descendant->getString() == Q[i]->getString()) { // If descendant not in Q, descendInQ will never be true
+								descendInQ = true;
+								if (descendant->getPathLength() < Q[i]->getPathLength()) { // Compares path lengths and keeps shorter path
+									Q.erase(Q.begin() + i);
+									Q.push_back(descendant);
+									++numOfStateExpansions;
+									break;
+								}
+							}
+						}
+						if (descendInQ == false) {
+							Q.push_back(descendant);
+							++numOfStateExpansions;
+						}
+					}
 				}
 			}
 		}
+		if (maxQLength < Q.size()) { maxQLength = Q.size(); }
+	}
 
-		// If state in EL then prevent expanding toExpand
-		if(stateInExpandedList == false) {
-			// Add toExpand (N) to EL
-			pair<size_t,int> hash_pair = make_pair(hash(toExpand->toString()), toExpand->getFCost());
-			expandedList.insert(hash_pair);
 
-			if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveUp(none)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveUp(none)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveUp(none));
-							++numOfStateExpansions;		
-							break;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveUp(none));
-					++numOfStateExpansions;
-				}
-			}
-
-			
-			if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveRight(none)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveRight(none)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveRight(none));
-							++numOfStateExpansions;
-							break;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveRight(none));
-					++numOfStateExpansions;
-				}
-			}
-						
-			if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveDown(none)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveDown(none)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveDown(none));
-							++numOfStateExpansions;
-							break;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveDown(none));
-					++numOfStateExpansions;
-				}
-			}
-
-			if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveLeft(none)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveLeft(none)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveLeft(none));
-							++numOfStateExpansions;
-							break;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveLeft(none));
-					++numOfStateExpansions;
-				}				
-			}
-		}		
-		expandedListEmpty = false;
-		stateInExpandedList = false;
-		delete toExpand;
-    }    
+//***********************************************************************************************************		
 	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);		
 	return "No path was found";
-
+		
 }
 
 
@@ -462,167 +456,201 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-string aStar_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, 
-                               int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, heuristicFunction heuristic){
-	
-	
-	clock_t startTime = clock();
-   	string path;
+string aStar_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, heuristicFunction heuristic){
+   clock_t startTime;
    
    numOfDeletionsFromMiddleOfHeap=0;
    numOfLocalLoopsAvoided=0;
    numOfAttemptedNodeReExpansions=0;
 
-	//Create a queue to hold the states
-    vector<Puzzle*> Q;
-	set<pair<size_t,int>> expandedList;
-	hash<string> hash;
+   //Create a queue to hold the states
+   vector<Puzzle*> Q;
+   unordered_map<string, int> Expanded_List;
 
-    maxQLength = 0;
-	
-    // Control variables
-    bool stateInExpandedList = false;
-    bool expandedListEmpty = true;
-    bool skip;
+   maxQLength = 0;
+   string path;
 
 
-    //Instatiate the board from the argv, and push onto the queue, incrementing the length    
-    							//argv[3]     //argv[4]
-    Puzzle *begin = new Puzzle(initialState, goalState, heuristic);
-    Q.push_back(begin);
-    maxQLength++;
+   //Instatiate the board from the argv, and push onto the queue, incrementing the length    
+							   //argv[3]     //argv[4]
+   Puzzle *begin = new Puzzle(initialState, goalState);
+   begin->updateFCost(heuristic);
+   Q.push_back(begin);
+   maxQLength++;
 
-    //Continue the algorithm until the Q is empty
-	while(!Q.empty()){
-		
-		//Get the front element (state) from the Q
-		Puzzle *toExpand = Q.front();
-		int index = 0;
-		for(int i = 1; i < Q.size(); ++i) {
-			if(toExpand->getFCost() > Q[i]->getFCost()) {
-				toExpand = Q[i];
-				index = i;
-			}
-		}
+   //Continue the algorithm until the Q is empty
+   while (!Q.empty()) {
 
-		//If the goalMatch (board == goalBoard) is true, get the path and break from the loop
-		if(toExpand->goalMatch()) { 
-			path = toExpand->getPath();
-			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);	
-			return path;
-		}
+	   //Get the front element (state) from the Q
+	   Puzzle *toExpand = Q.front();
+	   int index = 0;
+	   for (int i = 1; i < Q.size(); ++i) {
+		   if (Q[i]->getFCost() < toExpand->getFCost()) {
+			   toExpand = Q[i];
+			   index = i;
+		   }
+	   }
 
-		//Dequeue the front state. 
-		Q.erase(Q.begin() + index);
+	   //If the goalMatch (board == goalBoard) is true, get the path and break from the loop
+	   if (toExpand->goalMatch()) {
+		   path = toExpand->getPath();
+		   actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
+		   return path;
+	   }
 
-		// Prevents expandedList from being empty on first iteration
-		if(expandedListEmpty == false) {
-			// Check toExpand (N) is not in expandedList
-			for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-				pair<size_t, int> key_value = *it;
-				if(key_value.first == hash(toExpand->toString())) {
-					stateInExpandedList = true;
-					++numOfAttemptedNodeReExpansions;
-					break;
-				}
-			}
-		}
+	   //Dequeue the front state. 
+	   Q.erase(Q.begin() + index);
 
-		// If state in EL then prevent expanding toExpand
-		if(stateInExpandedList == false) {
+	   if (Expanded_List.find(toExpand->getString()) == Expanded_List.end()) {
+		   Expanded_List.insert(make_pair<string, int>(toExpand->getString(), toExpand->getFCost()));   // Adds state to EL
 
-			// Add toExpand (N) to EL
-			pair<size_t,int> hash_pair = make_pair(hash(toExpand->toString()), toExpand->getFCost());
-			expandedList.insert(hash_pair);
+		   Puzzle* descendant;
+//-------------------------------------------------UP MOVE---------------------------------------------
+		   if (toExpand->canMoveUp() && toExpand->getPath().back() != 'D') {
+			   descendant = toExpand->moveUp();
+			   descendant->updateFCost(heuristic);
+			   if (toExpand->checkSearchNode(descendant->getString())) {
+				   bool descendInEL = false;
+				   auto it = Expanded_List.find(descendant->getString());
+				   if (it != Expanded_List.end()) {   // If descendant in EL, compare F costs
+					   descendInEL = true;
+					   if (descendant->getFCost() < it->second) {   // Checks whether descendant F cost lower than state in EL
+						   Expanded_List.erase(it);   // Deletes EL state if descendant is F cost is lower
+						   descendInEL = false;
+					   }
+				   }
 
-			if(toExpand->canMoveUp() && toExpand->getPath().back() != 'D'){
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveUp(heuristic)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveUp(heuristic)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveUp(heuristic));
-							++numOfStateExpansions;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveUp(heuristic));
-					++numOfStateExpansions;
-				}
-			}
+				   if (!descendInEL) {   // If descendant not found in EL, then we want to add it to Q if it is not in Q
+					   bool descendInQ = false;
+					   for (auto i = 0; i < Q.size(); ++i) {
+						   if (descendant->getString() == Q[i]->getString()) {   // Checks whether descendant state is in Q
+							   if (descendant->getFCost() < Q[i]->getFCost()) {   // Check whether descendant has lower F cost
+								   Q.erase(Q.begin() + i);   // Removes the state with the shorter F cost 
+								   Q.push_back(descendant);
+								   ++numOfStateExpansions;
+							   }
+							   descendInQ = true;
+							   break;
+						   }
+					   }
+					   if (!descendInQ) {   // This will only be true if descendant is not in Q
+						   Q.push_back(descendant);
+						   ++numOfStateExpansions;
+					   }
+				   }
+			   }
+		   }
 
-			
-			if(toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveRight(heuristic)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveRight(heuristic)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveRight(heuristic));
-							++numOfStateExpansions;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveRight(heuristic));
-					++numOfStateExpansions;
-				}
-			}
-						
-			if(toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveDown(heuristic)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveDown(heuristic)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveDown(heuristic));
-							++numOfStateExpansions;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveDown(heuristic));
-					++numOfStateExpansions;
-				}
-			}
+//-------------------------------------------------RIGHT MOVE---------------------------------------------
+		   if (toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
+			   descendant = toExpand->moveRight();
+			   descendant->updateFCost(heuristic);
+			   if (toExpand->checkSearchNode(descendant->getString())) {
+				   bool descendInEL = false;
+				   auto it = Expanded_List.find(descendant->getString());
+				   if (it != Expanded_List.end()) {   // If descendant in EL, compare F costs
+					   descendInEL = true;
+					   if (descendant->getFCost() < it->second) {   // Checks whether descendant F cost lower than state in EL
+						   Expanded_List.erase(it);   // Deletes EL state if descendant is F cost is lower
+						   descendInEL = false;
+					   }
+				   }
 
-			if(toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
-				skip = false;
-				for(set<pair<size_t, int>>::iterator it = expandedList.begin(); it != expandedList.end(); ++it) {
-					pair<size_t, int> current_pair = *it;
-					if(hash(toExpand->moveLeft(heuristic)->toString()) == current_pair.first) {
-						skip = true;
-						if(toExpand->moveLeft(heuristic)->getFCost() < current_pair.second) {
-							expandedList.erase(it);
-							Q.push_back(toExpand->moveLeft(heuristic));
-							++numOfStateExpansions;
-						}
-					}
-				}
-				if(skip == false) {
-					Q.push_back(toExpand->moveLeft(heuristic));
-					++numOfStateExpansions;
-				}				
-			}
-			if(maxQLength < Q.size()){ maxQLength = Q.size(); }
-			
-		}
-		expandedListEmpty = false;
-		stateInExpandedList = false;
-		delete toExpand;
-	}	
-	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);	
+				   if (!descendInEL) {   // If descendant not found in EL, then we want to add it to Q if it is not in Q
+					   bool descendInQ = false;
+					   for (auto i = 0; i < Q.size(); ++i) {
+						   if (descendant->getString() == Q[i]->getString()) {   // Checks whether descendant state is in Q
+							   if (descendant->getFCost() < Q[i]->getFCost()) {   // Check whether descendant has lower F cost
+								   Q.erase(Q.begin() + i);   // Removes the state with the shorter F cost 
+								   Q.push_back(descendant);
+								   ++numOfStateExpansions;
+							   }
+							   descendInQ = true;
+							   break;
+						   }
+					   }
+					   if (!descendInQ) {   // This will only be true if descendant is not in Q
+						   Q.push_back(descendant);
+						   ++numOfStateExpansions;
+					   }
+				   }
+			   }
+		   }
+
+
+//-------------------------------------------------DOWN MOVE---------------------------------------------
+		   if (toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
+			   descendant = toExpand->moveDown();
+			   descendant->updateFCost(heuristic);
+			   if (toExpand->checkSearchNode(descendant->getString())) {
+				   bool descendInEL = false;
+				   auto it = Expanded_List.find(descendant->getString());
+				   if (it != Expanded_List.end()) {   // If descendant in EL, compare F costs
+					   descendInEL = true;
+					   if (descendant->getFCost() < it->second) {   // Checks whether descendant F cost lower than state in EL
+						   Expanded_List.erase(it);   // Deletes EL state if descendant is F cost is lower
+						   descendInEL = false;
+					   }
+				   }
+
+				   if (!descendInEL) {   // If descendant not found in EL, then we want to add it to Q if it is not in Q
+					   bool descendInQ = false;
+					   for (auto i = 0; i < Q.size(); ++i) {
+						   if (descendant->getString() == Q[i]->getString()) {   // Checks whether descendant state is in Q
+							   if (descendant->getFCost() < Q[i]->getFCost()) {   // Check whether descendant has lower F cost
+								   Q.erase(Q.begin() + i);   // Removes the state with the shorter F cost 
+								   Q.push_back(descendant);
+								   ++numOfStateExpansions;
+							   }
+							   descendInQ = true;
+							   break;
+						   }
+					   }
+					   if (!descendInQ) {   // This will only be true if descendant is not in Q
+						   Q.push_back(descendant);
+						   ++numOfStateExpansions;
+					   }
+				   }
+			   }
+		   }
+//-------------------------------------------------LEFT MOVE---------------------------------------------
+		   if (toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
+			   descendant = toExpand->moveLeft();
+			   descendant->updateFCost(heuristic);
+			   if (toExpand->checkSearchNode(descendant->getString())) {
+				   bool descendInEL = false;
+				   auto it = Expanded_List.find(descendant->getString());
+				   if (it != Expanded_List.end()) {   // If descendant in EL, compare F costs
+					   descendInEL = true;
+					   if (descendant->getFCost() < it->second) {   // Checks whether descendant F cost lower than state in EL
+						   Expanded_List.erase(it);   // Deletes EL state if descendant is F cost is lower
+						   descendInEL = false;
+					   }
+				   }
+
+				   if (!descendInEL) {   // If descendant not found in EL, then we want to add it to Q if it is not in Q
+					   bool descendInQ = false;
+					   for (auto i = 0; i < Q.size(); ++i) {
+						   if (descendant->getString() == Q[i]->getString()) {   // Checks whether descendant state is in Q
+							   if (descendant->getFCost() < Q[i]->getFCost()) {   // Check whether descendant has lower F cost
+								   Q.erase(Q.begin() + i);   // Removes the state with the shorter F cost 
+								   Q.push_back(descendant);
+								   ++numOfStateExpansions;
+							   }
+							   descendInQ = true;
+							   break;
+						   }
+					   }
+					   if (!descendInQ) {   // This will only be true if descendant is not in Q
+						   Q.push_back(descendant);
+						   ++numOfStateExpansions;
+					   }
+				   }
+			   }
+		   }
+		   if (maxQLength < Q.size()) { maxQLength = Q.size(); }
+	   }
+   }
+	actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
 	return "No path was found";		
 }
-
-
-
-
-

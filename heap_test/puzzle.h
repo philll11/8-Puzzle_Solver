@@ -1,13 +1,10 @@
 #include <string>
 #include <iostream>
-#include <unordered_set>
-#include <algorithm>
-#include <unordered_set>
 
 using namespace std;
 
 
-enum heuristicFunction{misplacedTiles, manhattanDistance};
+enum heuristicFunction{misplacedTiles, manhattanDistance, none};
 
 
 class Puzzle{
@@ -16,6 +13,7 @@ private:
 
     string path;
     int pathLength;
+    int hCost;
     int fCost;
     int depth; 
         
@@ -24,7 +22,6 @@ private:
     int x0, y0; //coordinates of the blank or 0-tile
     
     int board[3][3];
-    unordered_set<string> searchNode;
     
 public:
     
@@ -39,17 +36,18 @@ public:
     // }     
 
     Puzzle(const Puzzle &p); //Constructor
-    Puzzle(string const elements, string const goal);
-
-	unordered_set<string> getSearchNode();
-
+    Puzzle(string const elements, string const goal, heuristicFunction hFunction);
+     
     void printBoard();
     
     int h(heuristicFunction hFunction);
      
 
-    void updateFCost(heuristicFunction hFunction);
-    void updateDepth(){ depth++; }		 
+    void updateFCost(); 
+    void updateHCost(heuristicFunction hFunction);
+    void updateDepth(){
+		 depth++;
+	}		 
 	 	  
 	 
     bool goalMatch();
@@ -72,10 +70,10 @@ public:
 	 bool canMoveUp(int maxDepth);	 
 //----------------------------------------
 	  
-    Puzzle * moveLeft();
-    Puzzle * moveRight();
-    Puzzle * moveUp();
-    Puzzle * moveDown();
+    Puzzle * moveLeft(heuristicFunction hFunction);
+    Puzzle * moveRight(heuristicFunction hFunction);
+    Puzzle * moveUp(heuristicFunction hFunction);
+    Puzzle * moveDown(heuristicFunction hFunction);
 	 
 	 
     const string getPath();
@@ -85,6 +83,7 @@ public:
     
     int getPathLength();
     int getFCost();
+	int getHCost();
+	int getGCost();	
 	
-	bool checkSearchNode(string state) const;
 };
