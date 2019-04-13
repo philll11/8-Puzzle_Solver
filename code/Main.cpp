@@ -358,11 +358,11 @@ try{
 	
     }  else if(algorithmSelected == "astar_explist_misplacedtiles" ){       
         
-        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, misplacedTiles);     
+        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, "misplacedTiles");     
 
     }  else if(algorithmSelected == "astar_explist_manhattan" ){       
         
-        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, manhattanDistance); 
+        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, "manhattanDistance"); 
         
     }
 //-----------------------------------------------------------------------------

@@ -7,9 +7,6 @@
 using namespace std;
 
 
-enum heuristicFunction{misplacedTiles, manhattanDistance};
-
-
 class Puzzle{
 		
 private:
@@ -28,12 +25,15 @@ private:
 
 	long long hashedState;
 
+	string heuristic;
+
+	string strBoard;
+
 public:
-    
-    string strBoard;
 
     Puzzle(const Puzzle &p); //Constructor
     Puzzle(string const elements, string const goal);
+	Puzzle(string const elements, string const goal, string heuristicArg);
 
 
 	// Search Node methods
@@ -44,19 +44,18 @@ public:
     
 	void printBoard();
     
-    int h(heuristicFunction hFunction);
      
-
-    void updateFCost(heuristicFunction hFunction);
-    void updateDepth(){ depth++; }		 
+	string getHeuristic();
+    void updateFCost();
+	int h();
+    void updateDepth(){ depth++; }
+	int getFCost();
 	 	  
 	 
     bool goalMatch();
-	 string toString();
+	string toString();
 	
-    string getString(){
-		return strBoard;
-	 }
+	string getString();
     
     bool canMoveLeft();
     bool canMoveRight();
@@ -83,5 +82,4 @@ public:
     int getDepth();
     
     int getPathLength();
-    int getFCost();
 };
