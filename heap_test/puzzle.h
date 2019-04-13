@@ -1,13 +1,10 @@
 #include <string>
 #include <iostream>
-#include <unordered_set>
-#include <algorithm>
-#include <unordered_set>
 
 using namespace std;
 
 
-enum heuristicFunction{misplacedTiles, manhattanDistance};
+enum heuristicFunction{misplacedTiles, manhattanDistance, none};
 
 
 class Puzzle{
@@ -16,6 +13,7 @@ private:
 
     string path;
     int pathLength;
+    int hCost;
     int fCost;
     int depth; 
         
@@ -24,31 +22,32 @@ private:
     int x0, y0; //coordinates of the blank or 0-tile
     
     int board[3][3];
-    unordered_set<long long> searchNode;
-
-	long long hashedState;
-
+    
 public:
     
     string strBoard;
 
+    // bool operator!=(Puzzle const&o){
+    //     if(&o != this){
+    //         if(path.compare(o.path)){
+    //             return true;
+    //         }else return false;
+    //     }
+    // }     
+
     Puzzle(const Puzzle &p); //Constructor
-    Puzzle(string const elements, string const goal);
-
-
-	// Search Node methods
-	unordered_set<long long> getSearchNode() const;
-	bool checkSearchNode(long long state) const;
-	long long getHashedState() const { return hashedState;  }
-
-    
-	void printBoard();
+    Puzzle(string const elements, string const goal, heuristicFunction hFunction);
+     
+    void printBoard();
     
     int h(heuristicFunction hFunction);
      
 
-    void updateFCost(heuristicFunction hFunction);
-    void updateDepth(){ depth++; }		 
+    void updateFCost(); 
+    void updateHCost(heuristicFunction hFunction);
+    void updateDepth(){
+		 depth++;
+	}		 
 	 	  
 	 
     bool goalMatch();
@@ -71,10 +70,10 @@ public:
 	 bool canMoveUp(int maxDepth);	 
 //----------------------------------------
 	  
-    Puzzle * moveLeft();
-    Puzzle * moveRight();
-    Puzzle * moveUp();
-    Puzzle * moveDown();
+    Puzzle * moveLeft(heuristicFunction hFunction);
+    Puzzle * moveRight(heuristicFunction hFunction);
+    Puzzle * moveUp(heuristicFunction hFunction);
+    Puzzle * moveDown(heuristicFunction hFunction);
 	 
 	 
     const string getPath();
@@ -84,4 +83,7 @@ public:
     
     int getPathLength();
     int getFCost();
+	int getHCost();
+	int getGCost();	
+	
 };
