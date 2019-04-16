@@ -428,25 +428,26 @@ int main(int argc, char *argv[])
         cout << "Standard exception: " << e.what() << endl;
     }
 
-    if (pathLength == 0)
-        cout << "\n\n*---- NO SOLUTION found. (Q is empty!) ----*" << endl;
-
     if (typeOfRun == "batch_run")
     {
-        if (path == "TIME_OUT")
-            cout << " " << path << endl;
+        if (path == "TIME_OUT")   cout << " "<< path << "_Solution_took_too_long."<< endl;
+        //else if (pathLength == 0) cout << "  NO SOLUTION found. (Q is empty!)" << endl;
         else
-        {
+        {          
             cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(10) << pathLength;
             cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(10) << numOfStateExpansions;
             cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(19) << maxQLength;
             cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(15) << actualRunningTime;
             cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(15) << numOfDeletionsFromMiddleOfHeap;
-            cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(15) << numOfAttemptedNodeReExpansions << endl;
+            cout << setprecision(6) << std::setfill(' ') << std::fixed << std::right << ' ' << setw(15) << numOfAttemptedNodeReExpansions;           
+            if (pathLength == 0) cout <<  " NO_SOLUTION_found.(Q_is_empty!)." << endl;
+            else cout << endl;
         }
     }
     else if (typeOfRun == "single_run")
     {
+        if (pathLength == 0) cout << "\n\n*---- NO SOLUTION found. (Q is empty!) ----*" << endl;
+
         cout << setprecision(6) << setw(25) << std::setfill(' ') << std::right << endl
              << endl
              << "Initial State:" << std::fixed << ' ' << setw(12) << initialState << endl;

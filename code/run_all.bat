@@ -8,7 +8,19 @@ cls
 @echo ====================================================================================================================================================
 @echo INIT_STATE_#1:  042158367     GOAL STATE: 123804765
 @echo ====================================================================================================================================================
-@echo There is no solution for INIT_STATE_#1:  042158367
+@echo  ALGORITHM		         PATH_LENGTH	STATE_EXPANSIONS    MAX_QLENGTH	 RUNNING_TIME  DELETIONS_MIDDLE_HEAP ATTEMPTED_REEXPANSIONS
+@echo ====================================================================================================================================================
+set INIT_STATE = 042158367
+set GOAL_STATE = 123804765
+
+main.exe "batch_run" "Breadth_First_Search"      "042158367" "123804765"
+main.exe "batch_run" "Breadth_First_Search_VList"      "042158367" "123804765"
+
+main.exe "batch_run" "PDS_No_VList" 		"042158367" "123804765"
+main.exe "batch_run" "uniformcost_expandedlist" 		"042158367" "123804765"
+  
+main.exe "batch_run" "aStar_ExpList_MisplacedTiles"      "042158367" "123804765"
+main.exe "batch_run" "aStar_ExpList_Manhattan" "042158367" "123804765"
 
 @echo ====================================================================================================================================================
 @echo EXPERIMENT (2)

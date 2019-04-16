@@ -102,7 +102,7 @@ string breadthFirstSearch(string const initialState, string const goalState, int
 	//***********************************************************************************************************
 
 	actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
-	return "No path was found";
+	return path;
 }
 
 string breadthFirstSearch_with_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int &maxQLength, float &actualRunningTime)
@@ -208,7 +208,7 @@ string breadthFirstSearch_with_VisitedList(string const initialState, string con
 
 	//***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
-	return "No path was found";
+	return path;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -489,7 +489,7 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 
 	//***********************************************************************************************************
 	actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
-	return "No path was found";
+	return path;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -742,5 +742,5 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 		}
 	}
 	actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
-	return "No path was found";
+	return path;
 }
