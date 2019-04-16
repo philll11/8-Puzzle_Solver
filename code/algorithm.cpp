@@ -214,11 +214,14 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 			//Get the top element (state) from the stack
 			Puzzle *toExpand = stackQueuedStates.top();
 
+
+			//std::cout << toExpand->getPath() << endl; //DEBUG DELETE IN FINAL
+
 			//If the goalMatch (board == goalBoard) is true, get the path and return it
 			if(toExpand->goalMatch()) { 
 				path = toExpand->getPath();
-    			actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-				return path;
+				actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
+				return path;	 				
 			}
 
 			//Pop the top Queued States from the stack
@@ -226,37 +229,22 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 
 
 			//Expand the states and push onto stack if can move within depth level
+			if(toExpand->canMoveLeft(intervalDepth) && toExpand->getPath().back() != 'R')
+				stackQueuedStates.push(toExpand->moveLeft());
+			
+			if(toExpand->canMoveDown(intervalDepth) && toExpand->getPath().back() != 'U' )
+				stackQueuedStates.push(toExpand->moveDown());
+			
+			if(toExpand->canMoveRight(intervalDepth) && toExpand->getPath().back() != 'L')
+				stackQueuedStates.push(toExpand->moveRight());
 				
-			if(toExpand->canMoveLeft(intervalDepth) && toExpand->getPath().back() != 'R') {
-				if (toExpand->checkSearchNode(toExpand->moveLeft()->getHashedState())) {
-					stackQueuedStates.push(toExpand->moveLeft());
-					numOfStateExpansions++;
-				}
-			} 
-			
-			if(toExpand->canMoveDown(intervalDepth) && toExpand->getPath().back() != 'U'){
-				if (toExpand->checkSearchNode(toExpand->moveLeft()->getHashedState())) {
-					stackQueuedStates.push(toExpand->moveDown());
-					numOfStateExpansions++;
-				}
-			}
-			
-			if(toExpand->canMoveRight(intervalDepth) && toExpand->getPath().back() != 'L' ){
-				if (toExpand->checkSearchNode(toExpand->moveLeft()->getHashedState())) {
-					stackQueuedStates.push(toExpand->moveRight());
-					numOfStateExpansions++;
-				}
-			}
+			if(toExpand->canMoveUp(intervalDepth) && toExpand->getPath().back() != 'D') 
+				stackQueuedStates.push(toExpand->moveUp());	
 
-			if(toExpand->canMoveUp(intervalDepth) && toExpand->getPath().back() != 'D'){
-				if (toExpand->checkSearchNode(toExpand->moveLeft()->getHashedState())) {
-					stackQueuedStates.push(toExpand->moveUp());
-					numOfStateExpansions++;
-				}
-			}
-
-			if(maxQLength < stackQueuedStates.size()) {maxQLength = stackQueuedStates.size();} 
+			if(maxQLength < stackQueuedStates.size()) maxQLength = stackQueuedStates.size(); 
 			
+			//Increment state expensions
+			numOfStateExpansions++;
 
 			delete toExpand;
 
@@ -265,9 +253,8 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 		intervalDepth++;
     }	
     actualRunningTime = ((float)(clock() - startTime)/CLOCKS_PER_SEC);
-	return "No path was found";	 				
+	return path;	 				
 }
-	
 
 
 
