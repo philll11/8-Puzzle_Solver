@@ -6,6 +6,7 @@
 
 using namespace std;
 
+enum heuristicFunction{misplacedTiles, manhattanDistance};
 
 class Puzzle{
 		
@@ -25,7 +26,6 @@ private:
 
 	long long hashedState;
 
-	string heuristic;
 
 	string strBoard;
 
@@ -33,7 +33,6 @@ public:
 
     Puzzle(const Puzzle &p); //Constructor
     Puzzle(string const elements, string const goal);
-	Puzzle(string const elements, string const goal, string heuristicArg);
 
 
 	// Search Node methods
@@ -44,10 +43,8 @@ public:
     
 	void printBoard();
     
-     
-	string getHeuristic();
-    void updateFCost();
-	int h();
+    void updateFCost(heuristicFunction hFunction);
+	int h(heuristicFunction hFunction);
     void updateDepth(){ depth++; }
 	int getFCost();
 	 	  

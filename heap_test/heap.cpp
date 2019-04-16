@@ -3,7 +3,16 @@
 
 using namespace std;
 
+Heap::Heap(bool _heuristic) {
+ 	heuristic = _heuristic; 
+ }
 
+Heap::~Heap() {
+ 	for(int i = 0; i < size; ++i) {
+ 		delete items[i];
+ 	}
+ 	delete[] items;
+ }
 
 void Heap::swap(int indexOne, int indexTwo) {
 	Puzzle* temp = items[indexOne];
@@ -91,4 +100,11 @@ int Heap::find(string state) {
 		}			
 	}
 	return -1;
+}
+void Heap::deleteElement(int index) {
+	if(!empty()) {
+		items[index] = items[size - 1];
+		size--;
+		heapifyDown();
+	}
 }

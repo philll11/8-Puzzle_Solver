@@ -30,7 +30,6 @@ Puzzle::Puzzle(const Puzzle &p) : path(p.path){
 
 	searchNode = p.searchNode;
 
-	heuristic = p.heuristic;
 	
 }
 
@@ -72,52 +71,7 @@ Puzzle::Puzzle(string const elements, string const goal){
 	hashedState = computeHash(strBoard);
 
 	searchNode.insert(hashedState);
-
-	heuristic = "";
 }
-
-//////////////////////////////////////////////////////////////
-//constructor
-//inputs:  initial state, goal state
-//////////////////////////////////////////////////////////////
-Puzzle::Puzzle(string const elements, string const goal, string heuristicArg) {
-
-	int n;
-
-	n = 0;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			board[i][j] = elements[n] - '0';
-			if (board[i][j] == 0) {
-				x0 = j;
-				y0 = i;
-			}
-			n++;
-		}
-	}
-
-	///////////////////////
-	n = 0;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			goalBoard[i][j] = goal[n] - '0';
-			n++;
-		}
-	}
-	///////////////////////	
-	path = "";
-	pathLength = 0;
-	fCost = 0;
-	depth = 0;
-	strBoard = toString();
-
-	hashedState = computeHash(strBoard);
-
-	searchNode.insert(hashedState);
-
-	heuristic = heuristicArg;
-}
-
 
 unordered_set<long long> Puzzle::getSearchNode() const {
 	return searchNode;
@@ -142,26 +96,21 @@ string Puzzle::getString() {
 	return strBoard;
 }
 
-string Puzzle::getHeuristic() {
-	return heuristic;
-}
-
 int Puzzle::getFCost() {
 	return fCost;
 }
 
-void Puzzle::updateFCost(){
-	fCost = pathLength + h();
+void Puzzle::updateFCost(heuristicFunction hFunction){
+	fCost = pathLength + h(hFunction);
 }
 
 //Heuristic function implementation
-int Puzzle::h( ){
+int Puzzle::h(heuristicFunction hFunction){
 	
 	int numOfMisplacedTiles=0;
 	int h=0, sum=0, target=1, x1=0, x2=0, y1=0, y2=0, t=0;
-	if (getHeuristic() == "manhattanDistance") { t = 1; }
-	switch(t){
-		case 0:
+	switch(hFunction){
+		case misplacedTiles:
 			while(target <= 9) {
 				for(int i = 0; i < 3; ++i) {
 		        	for(int j = 0; j < 3; ++j) {
@@ -187,7 +136,7 @@ int Puzzle::h( ){
 			h = numOfMisplacedTiles; 					
 		    break;
 		         
-		case 1:
+		case manhattanDistance:
 			while(target <= 9) {
 				for(int i = 0; i < 3; ++i) {
 		        	for(int j = 0; j < 3; ++j) {
@@ -318,7 +267,6 @@ Puzzle *Puzzle::moveLeft(){
 	p->strBoard = p->toString();
 	p->hashedState = computeHash(p->strBoard);
 	p->searchNode.insert(p->hashedState);
-	p->updateFCost();
 
 	return p;
 	
@@ -347,7 +295,6 @@ Puzzle *Puzzle::moveRight(){
 	p->strBoard = p->toString();
 	p->hashedState = computeHash(p->strBoard);
 	p->searchNode.insert(p->hashedState);
-	p->updateFCost();
 	
 	return p;
 	
@@ -375,7 +322,6 @@ Puzzle *Puzzle::moveUp(){
 	p->strBoard = p->toString();
 	p->hashedState = computeHash(p->strBoard);
 	p->searchNode.insert(p->hashedState);
-	p->updateFCost();
 	
 	return p;
 	
@@ -402,7 +348,6 @@ Puzzle *Puzzle::moveDown(){
 	p->strBoard = p->toString();
 	p->hashedState = computeHash(p->strBoard);
 	p->searchNode.insert(p->hashedState);
-	p->updateFCost();
 	
 	return p;
 	

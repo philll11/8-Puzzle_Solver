@@ -3,17 +3,14 @@
 //  
 //  Start-up codes by n.h.reyes@massey.ac.nz
 //
-//  Name(s): Leonard Phillips (15232331) & Peter Fredatovich ()
-//  Date: 15 April, 2019
+//  Name(s):
+//  Date:
 //
 //////////////////////////////////////////////////////////////////////////
 /*
  * Flicker-free implementation of the 8-puzzle board game using the BGI
  * graphics library for Windows.
  */
-
-//This is a comment//
-
 
 #include <windows.h>
 #include <stdio.h>
@@ -338,9 +335,8 @@ try{
 	//Run algorithm
 
     if(algorithmSelected == "breadth_first_search" ){
-        cout<<"P>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ath = "<<path<<endl;        
-        path = breadthFirstSearch(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime);
         
+        path = breadthFirstSearch(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime);
 
     } else if(algorithmSelected == "breadth_first_search_vlist" ){
         
@@ -358,11 +354,11 @@ try{
 	
     }  else if(algorithmSelected == "astar_explist_misplacedtiles" ){       
         
-        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, "misplacedTiles");     
+        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, misplacedTiles);     
 
     }  else if(algorithmSelected == "astar_explist_manhattan" ){       
         
-        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, "manhattanDistance"); 
+        path = aStar_ExpandedList(initialState, goalState, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap,numOfLocalLoopsAvoided ,numOfAttemptedNodeReExpansions, manhattanDistance); 
         
     }
 //-----------------------------------------------------------------------------
@@ -421,9 +417,6 @@ catch(exception &e){
 
 		cout << "================================================================================================================" << endl << endl;	
 		
-        cout<<"Path = "<<path<<endl;
-
-
 		if(path != "") {
              initgraph(&graphDriver, &graphMode, "", WIDTH, HEIGHT);
 			 AnimateSolution(initialState, goalState, path);
@@ -431,9 +424,6 @@ catch(exception &e){
 		}
 	}
     
-    getch(); //Stops the animation dissapearing
-
-    cout<<"Path = "<<path<<endl;
     
     /* Show that we have exited without an error. */
     return 0;

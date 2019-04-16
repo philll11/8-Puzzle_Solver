@@ -1,6 +1,5 @@
 
 #include <typeinfo>
-#include "algorithm.h"
 #include <queue>
 #include <stack>
 #include <vector>
@@ -9,8 +8,7 @@
 #include <unordered_set>
 
 
-#include "hash_function.h"
-
+#include "algorithm.h"
 using namespace std;
 
 
@@ -446,7 +444,7 @@ string uniformCost_ExpandedList(string const initialState, string const goalStat
 // Move Generator:  
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
-string aStar_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, string heuristic){
+string aStar_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, heuristicFunction heuristic){
    clock_t startTime;
    
    numOfDeletionsFromMiddleOfHeap=0;
@@ -463,7 +461,8 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 
    //Instatiate the board from the argv, and push onto the queue, incrementing the length    
 							   //argv[3]     //argv[4]
-   Puzzle *begin = new Puzzle(initialState, goalState, heuristic);
+   Puzzle *begin = new Puzzle(initialState, goalState);
+   begin->updateFCost(heuristic);
    Q.push_back(begin);
    maxQLength++;
 
@@ -497,6 +496,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 //-------------------------------------------------UP MOVE---------------------------------------------
 		   if (toExpand->canMoveUp() && toExpand->getPath().back() != 'D') {
 			   descendant = toExpand->moveUp();
+			   descendant->updateFCost(heuristic);
 			   if (toExpand->checkSearchNode(descendant->getHashedState())) {
 				   bool descendInEL = false;
 				   auto it = Expanded_List.find(descendant->getHashedState());
@@ -532,6 +532,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 //-------------------------------------------------RIGHT MOVE---------------------------------------------
 		   if (toExpand->canMoveRight() && toExpand->getPath().back() != 'L') {
 			   descendant = toExpand->moveRight();
+			   descendant->updateFCost(heuristic);
 			   if (toExpand->checkSearchNode(descendant->getHashedState())) {
 				   bool descendInEL = false;
 				   auto it = Expanded_List.find(descendant->getHashedState());
@@ -568,6 +569,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 //-------------------------------------------------DOWN MOVE---------------------------------------------
 		   if (toExpand->canMoveDown() && toExpand->getPath().back() != 'U') {
 			   descendant = toExpand->moveDown();
+			   descendant->updateFCost(heuristic);
 			   if (toExpand->checkSearchNode(descendant->getHashedState())) {
 				   bool descendInEL = false;
 				   auto it = Expanded_List.find(descendant->getHashedState());
@@ -602,6 +604,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 //-------------------------------------------------LEFT MOVE---------------------------------------------
 		   if (toExpand->canMoveLeft() && toExpand->getPath().back() != 'R') {
 			   descendant = toExpand->moveLeft();
+			   descendant->updateFCost(heuristic);
 			   if (toExpand->checkSearchNode(descendant->getHashedState())) {
 				   bool descendInEL = false;
 				   auto it = Expanded_List.find(descendant->getHashedState());

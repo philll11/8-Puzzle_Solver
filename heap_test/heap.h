@@ -28,13 +28,14 @@ class Heap {
 		void ensureExtraCapacity();
 
 	public:
-		Heap(bool _heuristic) { heuristic = _heuristic; }
-		~Heap() { };
+		Heap();
+		Heap(bool _heuristic);
+		~Heap();
 		Puzzle* poll();
 		void add(Puzzle* puzzle);
 		void heapifyUp();
 		void heapifyDown();
 		int find(string state);
-
+		void deleteElement(int index);
 
 };

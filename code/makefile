@@ -1,11 +1,8 @@
-Main.exe	: Main.o heap.o graphics2.o hash_function.o puzzle.o algorithm.o
-	g++ -O2 -std=c++11 -o Main.exe Main.o graphics2.o heap.o hash_function.o puzzle.o algorithm.o -l gdi32 -static-libgcc -static-libstdc++
+Main.exe	: Main.o graphics2.o hash_function.o puzzle.o algorithm.o
+	g++ -O2 -std=c++11 -o Main.exe Main.o graphics2.o hash_function.o puzzle.o algorithm.o -l gdi32 -static-libgcc -static-libstdc++
 			
-Main.o	: Main.cpp graphics2.h heap.h hash_function.h puzzle.h algorithm.h 
+Main.o	: Main.cpp graphics2.h hash_function.h puzzle.h algorithm.h 
 	g++ -O2 -std=c++11 -c -Wno-write-strings Main.cpp
-	
-heap.o 	: heap.cpp heap.h
-	g++ -O2 -std=c++11 -c -Wno-write-strings heap.cpp
 	
 hash_function.o  : hash_function.cpp hash_function.h
 	g++ -O2 -std=c++11 -c -Wno-write-strings hash_function.cpp

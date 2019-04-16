@@ -1,34 +1,41 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 #include <iostream>
-#include <fstream>
+#include "puzzle.h"
 
 using namespace std;
 
-
-vector<int> vector_random;
-vector<int> vector_reversed;
-vector<int> vector_sorted;
-vector<int> final_vector;
-
-/*  Implement a Heap class here (from the slides)  */
-
-
-
 class Heap {
 	private:
-		vector <int> data;
-		int last;   //last index
-		int llast;   //very last index
+		unsigned int capacity = 10000;
+		unsigned int size = 0;
+		bool heuristic;
+		Puzzle** items = new Puzzle*[capacity];
+
+		int getLeftChildIndex(int parentIndex) { return 2 * parentIndex + 1; }
+		int getRightChildIndex(int parentIndex) { return 2 * parentIndex + 2; }
+		int getParentIndex(int childIndex) { return (childIndex - 1) / 2; }
+
+		bool hasLeftChild(int index) { return getLeftChildIndex(index) < size; }
+		bool hasRightChild(int index) { return getRightChildIndex(index) < size; }
+		bool hasParent(int index) { return getParentIndex(index) >= 0; }
+
+		Puzzle* leftChild(int index) { return items[getLeftChildIndex(index)]; }
+		Puzzle* rightChild(int index) { return items[getRightChildIndex(index)]; }
+		Puzzle* parent(int index) { return items[getParentIndex(index)]; }
+
+		bool empty() { if(size == 0){ return true; } return false; }
+
+		void swap(int indexOne, int indexTwo);
+		void ensureExtraCapacity();
+
 	public:
-		Heap(){last=-1; llast=-1;};  // constructor, consider data[i]=0 an empty slot
-		~Heap() { };//destructor
-		int InsertHeap( int newthing);
-		int Delete(int valuetodelete);
-		void PrintHeap();
-		void PrintWHeap();
-		int Return();
-		int DeleteRoot();
-		int ReturnValue(int index);
+		Heap();
+		Heap(bool _heuristic);
+		~Heap();
+		Puzzle* poll();
+		void add(Puzzle* puzzle);
+		void heapifyUp();
+		void heapifyDown();
+		int find(string state);
+		void deleteElement(int index);
+
 };

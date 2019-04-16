@@ -10,7 +10,10 @@
 #include <queue>
 
 #include "puzzle.h"
+#include "hash_function.h"
 
+
+const heuristicFunction HEURISTIC_FUNCTION=manhattanDistance;
 
 
 //Function prototypes
@@ -19,12 +22,11 @@ string progressiveDeepeningSearch_No_VisitedList(string const initialState, stri
 
 string breadthFirstSearch_with_VisitedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime);
 string breadthFirstSearch(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, float &actualRunningTime);
-Puzzle* calcMoves(queue<Puzzle*> Q, int &maxQLength);
 
 string uniformCost_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, 
                                float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions);
 
 string aStar_ExpandedList(string const initialState, string const goalState, int &numOfStateExpansions, int& maxQLength, 
-                               float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, string heuristic);
+                               float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, heuristicFunction heuristic);
 
 #endif
