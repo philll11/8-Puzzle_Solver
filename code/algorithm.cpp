@@ -597,7 +597,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 						{ // This will only be true if descendant is not in Q
 							Q.push_back(descendant);
 							++numOfStateExpansions;
-						}
+						}else ++numOfAttemptedNodeReExpansions;
 					}
 				}
 			}
@@ -642,7 +642,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 						{ // This will only be true if descendant is not in Q
 							Q.push_back(descendant);
 							++numOfStateExpansions;
-						}
+						}else ++numOfAttemptedNodeReExpansions;
 					}
 				}
 			}
@@ -687,7 +687,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 						{ // This will only be true if descendant is not in Q
 							Q.push_back(descendant);
 							++numOfStateExpansions;
-						}
+						}else ++numOfAttemptedNodeReExpansions;
 					}
 				}
 			}
@@ -731,7 +731,7 @@ string aStar_ExpandedList(string const initialState, string const goalState, int
 						{ // This will only be true if descendant is not in Q
 							Q.push_back(descendant);
 							++numOfStateExpansions;
-						}
+						}else ++numOfAttemptedNodeReExpansions;
 					}
 				}
 			}
