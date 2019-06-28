@@ -7,6 +7,4 @@ This application solves the 8-puzzle problem using 4 different search algorithms
 *  A* search using Misplaced Tiles
 *  A* search using Manhattan Distance
 
-## This application was built to satisfy the first assignment for the Massey University Artificial Intelligence paper 159.302.
-
-The 6 algorithms are located in the algorithm.cpp file.
+The 4 algorithms are located in the algorithm.cpp file.
