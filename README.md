@@ -1,5 +1,5 @@
 # 8-Puzzle Solver
-This application solves the 8-puzzle problem using 6 different search algorithms:
+This application solves the 8-puzzle problem using 4 different search algorithms, with and without memorization lists:
 *  Breadth-first search with a Visited List
 *  Breadth-first search without a Visited List
 *  Progressive Deepening search without Visited List
