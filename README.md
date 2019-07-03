@@ -4,7 +4,7 @@ This application solves the 8-puzzle problem using 4 different search algorithms
 *  Breadth-first search without a Visited List
 *  Progressive Deepening search without Visited List
 *  Uniform Cost search using Expanded List
-*  A* search using Misplaced Tiles
-*  A* search using Manhattan Distance
+*  A* search with Expanded List using Misplaced Tiles
+*  A* search with Expanded List using Manhattan Distance
 
 The 4 algorithms are located in the algorithm.cpp file.
